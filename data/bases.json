@@ -1,0 +1,44 @@
+{
+  "kennedy": {
+    "id": "kennedy",
+    "name": "肯尼迪航天中心",
+    "owner": "earth_gov",
+    "latitude": 28.57,
+    "launch_slots": 3,
+    "weather": {
+      "wind_speed": 5.2,
+      "lightning_risk": 0.15,
+      "updated_at": "2247-09-14T03:22:15Z"
+    },
+    "fuel_types": ["RP-1", "LH2"],
+    "logistics_modifier": 1.0
+  },
+  "baikonur": {
+    "id": "baikonur",
+    "name": "拜科努尔发射场",
+    "owner": "earth_gov",
+    "latitude": 45.96,
+    "launch_slots": 2,
+    "weather": {
+      "wind_speed": 8.1,
+      "lightning_risk": 0.30,
+      "updated_at": "2247-09-14T03:22:15Z"
+    },
+    "fuel_types": ["RP-1"],
+    "logistics_modifier": 1.2
+  },
+  "mars_base_1": {
+    "id": "mars_base_1",
+    "name": "火星基地阿尔法",
+    "owner": "mars_ind",
+    "latitude": -4.5,
+    "launch_slots": 1,
+    "weather": {
+      "wind_speed": 25.0,
+      "lightning_risk": 0.05,
+      "updated_at": "2247-09-14T03:22:15Z"
+    },
+    "fuel_types": ["Methane"],
+    "logistics_modifier": 0.8
+  }
+}
