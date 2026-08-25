@@ -1,9 +1,15 @@
 🚀 Astrolex
+
 https://img.shields.io/badge/Go-1.20+-00ADD8?style=flat&logo=go
+
 https://img.shields.io/badge/License-MIT-yellow.svg
+
 https://img.shields.io/github/actions/workflow/status/yy-diyinb/astrolex-mvp-/go.yml?branch=main
+
 Hardcore space engineering simulator · Terminal MUD
-Astrolex puts you in the cockpit of your own space agency. Design rockets and satellites, calculate orbital transfers, automate missions with ECCL scripting, and manage complex assembly projects—all from the Linux terminal.
+
+Astrolex puts you in the cockpit of your own space agency. Design rockets and satellites, calculate orbital transfers, automate missions with ECCL scripting, and manage complex assembly projects—all from 
+the Linux terminal.
 
 ✨ Features
 
@@ -46,44 +52,79 @@ https://via.placeholder.com/800x400?text=ASCII+Terminal+Demo
 Example session (terminal):
 text
 
+
 > design satellite
+
 > sol_panel_large camera antenna done
+
 > design
+
 > faring_6m av-1 cargo_bay_small t-4000 kr-99 t-4000 kr-99 done
+
 > cargo load design_1 1 satellite sat_1
+
 > launch design_1 earth 2
+
 > orbit release main_1 1 1
+
 > sat measure cargo_1
+
 > sat send cargo_1
 
 📖 Command Overview
+
 Category	Commands
+
 Design	design, edit, list parts/designs/satellites
+
 Launch	launch, window, tick, date
+
 Orbit	orbit info/transfer/escape/dock/travel/release/flyby
+
 Satellite	sat list/status/measure/send/point
+
 Cargo	cargo info/load
+
 Programming	program edit/list/upload/run/stop/logs/status
+
 Assembly	assembly create/add/list/status/start/step/pause/resume/delete/program
+
 Economy	contract, accept, done, budget
+
 System	save, load, list saves, exit
+
 📁 Project Structure
+
 text
 
 astrolex/
+
 ├── cmd/astrolex/           # Main entry point
+
 ├── internal/
+
 │   ├── config/             # Configuration loading
+
 │   ├── domain/             # Core data models
+
 │   ├── engine/             # Physics, ECCL VM, orbital mechanics
+
 │   ├── interface/          # REPL, commands, ASCII renderer
+
 │   └── repository/         # Data persistence (JSON)
+
 ├── data/                   # Static data: star catalog, parts, satellite modules
+
 ├── config/                 # Game configuration
+
 ├── saves/                  # Player save slots (ignored by Git)
+
 ├── docs/                   # Design documents
+
 ├── go.mod
+
 ├── go.sum
+
 └── README.md
 
 🧪 Development
