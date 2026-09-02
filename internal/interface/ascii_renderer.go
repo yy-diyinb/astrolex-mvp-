@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"astrolex/internal/domain"
+	"astrolex/internal/i18n"
 )
 
 // ASCIIRenderer 负责渲染 ASCII 火箭发射 UI
@@ -12,16 +13,16 @@ type ASCIIRenderer struct {
 	// 火箭设计（用于确定级数、载荷等）
 	design *domain.RocketDesign
 	// 当前遥测数据
-	height      float64 // km
-	speed       float64 // km/s
-	accel       float64 // G
-	timeElapsed float64 // 秒
-	deltaVUsed  float64 // m/s
-	currentStage int    // 当前级数（从1开始）
-	totalStages int    // 总级数
+	height       float64 // km
+	speed        float64 // km/s
+	accel        float64 // G
+	timeElapsed  float64 // 秒
+	deltaVUsed   float64 // m/s
+	currentStage int     // 当前级数（从1开始）
+	totalStages  int     // 总级数
 	// 动画状态
-	tailFlameLength int    // 尾焰长度（字符数）
-	stageSeparated  bool   // 是否已分离当前级
+	tailFlameLength int  // 尾焰长度（字符数）
+	stageSeparated  bool // 是否已分离当前级
 	// 终端尺寸（近似）
 	termWidth  int
 	termHeight int
@@ -93,11 +94,15 @@ func (r *ASCIIRenderer) renderTelemetry() string {
 	var sb strings.Builder
 
 	sb.WriteString("╔════════════════════════════════════════════════════════════════╗\n")
-	sb.WriteString("║                      🚀 发射状态                           ║\n")
+	sb.WriteString(fmt.Sprintf("║                      %-22s                     ║\n", i18n.T("launch_status_title")))
 	sb.WriteString("╠════════════════════════════════════════════════════════════════╣\n")
-	sb.WriteString(fmt.Sprintf("║  高度: %8.1f km   |   速度: %7.2f km/s            ║\n", r.height, r.speed))
-	sb.WriteString(fmt.Sprintf("║  加速度: %6.2f G   |   时间: %7.1f s              ║\n", r.accel, r.timeElapsed))
-	sb.WriteString(fmt.Sprintf("║  级数: %d/%d        |   剩余 Δv: %8.0f m/s      ║\n", r.currentStage, r.totalStages, r.design.DeltaV-r.deltaVUsed))
+	sb.WriteString(fmt.Sprintf("║  %-8s %8.1f km  |   %-6s %7.2f km/s            ║\n",
+		i18n.T("telemetry_altitude"), r.height, i18n.T("telemetry_velocity"), r.speed))
+	sb.WriteString(fmt.Sprintf("║  %-8s %6.2f G   |   %-6s %7.1f s              ║\n",
+		i18n.T("telemetry_accel"), r.accel, i18n.T("telemetry_time"), r.timeElapsed))
+	sb.WriteString(fmt.Sprintf("║  %-8s %d/%d        |   %-6s %8.0f m/s      ║\n",
+		i18n.T("telemetry_stage"), r.currentStage, r.totalStages,
+		i18n.T("telemetry_remaining_dv"), r.design.DeltaV-r.deltaVUsed))
 	sb.WriteString("╚════════════════════════════════════════════════════════════════╝\n")
 
 	return sb.String()
@@ -123,8 +128,8 @@ func (r *ASCIIRenderer) renderRocket() string {
 		"        /  \\",
 		"       /    \\",
 		"      /      \\",
-		"     /  载荷   \\",
-		"    /  卫星舱  \\",
+		"     /  " + i18n.T("ascii_payload") + "  \\",
+		"    /  " + i18n.T("ascii_satellite_bay") + " \\",
 		"   /____________\\",
 	}
 
@@ -161,22 +166,22 @@ func (r *ASCIIRenderer) renderStages() []string {
 		if r.stageSeparated && i == r.currentStage-1 {
 			// 已分离的级用虚线表示
 			lines = append(lines, "   |----------|")
-			lines = append(lines, "   |  (已分离) |")
+			lines = append(lines, "   | " + i18n.T("ascii_separated") + " |")
 			lines = append(lines, "   |----------|")
 			continue
 		}
 		// 普通级
-		stageNum := fmt.Sprintf("  第 %d 级", i)
+		stageNum := fmt.Sprintf(" " + i18n.T("ascii_stage") + " %d", i)
 		lines = append(lines, "   __________")
 		lines = append(lines, "  |          |")
-		lines = append(lines, fmt.Sprintf("  | %s |", stageNum))
+		lines = append(lines, fmt.Sprintf("  |%s |", stageNum))
 		lines = append(lines, "  |          |")
 		lines = append(lines, "  |  ██████  |")
 		lines = append(lines, "  |  ██████  |")
 		lines = append(lines, "  |  ██████  |")
 		if i == r.totalStages {
 			// 最后一级包含引擎
-			lines = append(lines, "  |  引擎   |")
+			lines = append(lines, "  | " + i18n.T("ascii_engine") + " |")
 			lines = append(lines, "  |  ████   |")
 		}
 		lines = append(lines, "  |__________|")
@@ -219,14 +224,14 @@ func (r *ASCIIRenderer) renderFlame() []string {
 
 // renderStatusLine 渲染底部状态行
 func (r *ASCIIRenderer) renderStatusLine() string {
-	status := "🚀 飞行正常"
+	status := "🚀 " + i18n.T("ascii_status_normal")
 	if r.stageSeparated {
-		status = "🔧 级分离"
+		status = "🔧 " + i18n.T("ascii_status_separating")
 	}
 	if r.tailFlameLength == 0 {
-		status = "🛑 发动机关机"
+		status = "🛑 " + i18n.T("ascii_status_shutdown")
 	}
-	return fmt.Sprintf("\n\n  %s  |  当前级: %d/%d", status, r.currentStage, r.totalStages)
+	return fmt.Sprintf("\n\n  %s  |  %s: %d/%d", status, i18n.T("telemetry_stage"), r.currentStage, r.totalStages)
 }
 
 // Clear 清屏

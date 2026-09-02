@@ -9,6 +9,7 @@ import (
 
 	"astrolex/internal/domain"
 	"astrolex/internal/engine"
+	"astrolex/internal/i18n"
 )
 
 // ==================== 卫星设计列表 ====================
@@ -16,17 +17,17 @@ import (
 // listSatellites 显示所有已设计的卫星（非在轨）
 func (r *Repl) listSatellites() {
 	if len(r.game.SatelliteDesigns) == 0 {
-		fmt.Println("暂无卫星设计，请使用 design satellite 创建。")
+		fmt.Println(i18n.T("no_satellite_designs"))
 		return
 	}
 	for _, s := range r.game.SatelliteDesigns {
-		fmt.Printf("ID: %s  名称: %s  质量: %.0f kg  功耗: %.0f W  数据率: %.0f kbps  成本: %d 信用点\n",
+		fmt.Printf(i18n.T("satellite_design_item"),
 			s.ID, s.Name, s.TotalMass, s.TotalPower, s.TotalDataRate, s.TotalCost)
 		var mods []string
 		for _, m := range s.Modules {
 			mods = append(mods, m.Name)
 		}
-		fmt.Printf("  模块: %s\n", strings.Join(mods, ", "))
+		fmt.Printf(i18n.T("satellite_design_modules"), strings.Join(mods, ", "))
 	}
 }
 
@@ -56,10 +57,10 @@ func (r *Repl) editSatellite(satID string) {
 		}
 	}
 	if sat == nil {
-		fmt.Printf("错误: 未找到卫星设计 ID '%s'\n", satID)
+		fmt.Printf(i18n.T("error_sat_design_not_found"), satID)
 		return
 	}
-	fmt.Printf("编辑卫星设计: %s (%s)\n", sat.Name, sat.ID)
+	fmt.Printf(i18n.T("edit_satellite_title"), sat.Name, sat.ID)
 	r.designSatelliteCommon(sat)
 }
 
@@ -68,8 +69,8 @@ func (r *Repl) designSatelliteCommon(preset *domain.SatelliteDesign) {
 	var name string
 
 	if isEdit {
-		fmt.Printf("当前卫星名称: %s (回车保留)\n", preset.Name)
-		fmt.Print("请输入卫星名称: ")
+		fmt.Printf(i18n.T("edit_satellite_name_prompt"), preset.Name)
+		fmt.Print(i18n.T("enter_satellite_name"))
 		nameInput, _ := r.reader.ReadString('\n')
 		nameInput = strings.TrimSpace(nameInput)
 		if nameInput == "" {
@@ -78,23 +79,23 @@ func (r *Repl) designSatelliteCommon(preset *domain.SatelliteDesign) {
 			name = nameInput
 		}
 	} else {
-		fmt.Print("请输入卫星名称: ")
+		fmt.Print(i18n.T("enter_satellite_name"))
 		name, _ = r.reader.ReadString('\n')
 		name = strings.TrimSpace(name)
 		if name == "" {
-			name = "未命名卫星"
+			name = i18n.T("default_satellite_name")
 		}
 	}
 
 	moduleCatalog, err := loadSatelliteModules("data/satellite_modules.json")
 	if err != nil {
-		fmt.Println("加载卫星模块失败:", err)
+		fmt.Printf(i18n.T("error_load_modules"), err)
 		return
 	}
 
-	fmt.Println("\n可用卫星模块列表:")
+	fmt.Println(i18n.T("available_satellite_modules"))
 	for _, m := range moduleCatalog {
-		fmt.Printf("[%s] %s (%s) 质量:%.0fkg 功耗:%.0fW 数据率:%.0fkbps 成本:%d\n",
+		fmt.Printf(i18n.T("satellite_module_format"),
 			m.ID, m.Name, m.Type, m.Mass, m.PowerConsume, m.DataRate, m.Cost)
 	}
 
@@ -104,12 +105,12 @@ func (r *Repl) designSatelliteCommon(preset *domain.SatelliteDesign) {
 			currentMods = append(currentMods, m.ID)
 		}
 		if len(currentMods) > 0 {
-			fmt.Printf("当前模块序列: %s\n", strings.Join(currentMods, " "))
+			fmt.Printf(i18n.T("edit_satellite_current_modules"), strings.Join(currentMods, " "))
 		}
 	}
 
 	var selectedModules []domain.SatelliteModule
-	fmt.Println("\n请按顺序输入模块ID（用空格分隔），输入 'done' 结束：")
+	fmt.Println(i18n.T("enter_module_ids"))
 	for {
 		fmt.Print("> ")
 		line, _ := r.reader.ReadString('\n')
@@ -136,7 +137,7 @@ func (r *Repl) designSatelliteCommon(preset *domain.SatelliteDesign) {
 					}
 				}
 				if found == nil {
-					fmt.Printf("警告: 未找到模块 '%s'\n", token)
+					fmt.Printf(i18n.T("warning_module_not_found"), token)
 					continue
 				}
 				selectedModules = append(selectedModules, *found)
@@ -156,7 +157,7 @@ func (r *Repl) designSatelliteCommon(preset *domain.SatelliteDesign) {
 				}
 			}
 			if found == nil {
-				fmt.Printf("警告: 未找到模块 '%s'\n", token)
+				fmt.Printf(i18n.T("warning_module_not_found"), token)
 				continue
 			}
 			selectedModules = append(selectedModules, *found)
@@ -164,7 +165,7 @@ func (r *Repl) designSatelliteCommon(preset *domain.SatelliteDesign) {
 	}
 
 	if len(selectedModules) == 0 {
-		fmt.Println("未选择任何模块，取消设计。")
+		fmt.Println(i18n.T("no_modules_selected"))
 		return
 	}
 
@@ -202,7 +203,7 @@ func (r *Repl) designSatelliteCommon(preset *domain.SatelliteDesign) {
 			part.SatelliteID = satID
 			r.game.PartsDB[satID] = part
 		}
-		fmt.Printf("\n✅ 卫星设计已更新！\n")
+		fmt.Println(i18n.T("satellite_design_updated"))
 	} else {
 		r.game.SatelliteDesigns = append(r.game.SatelliteDesigns, design)
 		satellitePart := domain.Part{
@@ -223,16 +224,11 @@ func (r *Repl) designSatelliteCommon(preset *domain.SatelliteDesign) {
 			IsControlChip: false,
 		}
 		r.game.PartsDB[satID] = satellitePart
-		fmt.Printf("\n✅ 卫星设计完成！\n")
+		fmt.Println(i18n.T("satellite_design_complete"))
 	}
 
-	fmt.Printf("名称: %s\n", name)
-	fmt.Printf("ID: %s\n", satID)
-	fmt.Printf("总质量: %.0f kg\n", totalMass)
-	fmt.Printf("总功耗: %.0f W\n", totalPower)
-	fmt.Printf("总数据率: %.0f kbps\n", totalDataRate)
-	fmt.Printf("总成本: %d 信用点\n", totalCost)
-	fmt.Printf("已添加到零件列表，可在火箭设计时作为载荷选择 (ID: %s)\n", satID)
+	fmt.Printf(i18n.T("satellite_design_info"),
+		name, satID, totalMass, totalPower, totalDataRate, totalCost, satID)
 }
 
 // ==================== 在轨航天器命令 ====================
@@ -240,94 +236,99 @@ func (r *Repl) designSatelliteCommon(preset *domain.SatelliteDesign) {
 // vesselList 列出所有在轨航天器（Vessel）
 func (r *Repl) vesselList() {
 	if len(r.game.Vessels) == 0 {
-		fmt.Println("当前没有在轨航天器。")
+		fmt.Println(i18n.T("sat_list_empty"))
 		return
 	}
-	fmt.Println("在轨航天器列表:")
+	fmt.Println(i18n.T("sat_list_title"))
 	for _, v := range r.game.Vessels {
 		if !v.IsActive {
 			continue
 		}
-		bodyName := "深空"
+		bodyName := i18n.T("deep_space")
 		if v.OrbitBodyID != "deep_space" && v.OrbitBodyID != "docked" {
 			if b, ok := r.game.StarSystem.CelestialBodies[v.OrbitBodyID]; ok {
 				bodyName = b.Name
 			}
 		} else if v.OrbitBodyID == "deep_space" {
-			bodyName = "深空"
+			bodyName = i18n.T("deep_space")
 		} else {
-			bodyName = "已对接"
+			bodyName = i18n.T("docked")
 		}
 		ccMark := ""
 		if v.HasControlCenter {
-			ccMark = " [控制中心]"
+			ccMark = " " + i18n.T("control_center_mark")
 		}
 		typeMark := ""
 		switch v.Type {
 		case domain.VesselSingle:
-			typeMark = " [单体]"
+			typeMark = " " + i18n.T("vessel_type_single")
 		case domain.VesselComposite:
-			typeMark = " [组合体]"
+			typeMark = " " + i18n.T("vessel_type_composite")
 		case domain.VesselCargo:
-			typeMark = " [货物]"
+			typeMark = " " + i18n.T("vessel_type_cargo")
 		case domain.VesselAircraft:
-			typeMark = " [飞机]"
+			typeMark = " " + i18n.T("vessel_type_aircraft")
 		}
-		fmt.Printf("ID: %s  名称: %s%s%s  位置: %s  电力: %.0f Wh  数据: %.0f MB  剩余Δv: %.0f m/s  状态: %s\n",
-			v.ID, v.Name, ccMark, typeMark, bodyName, v.Power, v.DataStored, v.DeltaVRemaining, map[bool]string{true: "正常", false: "失效"}[v.IsActive])
+		status := i18n.T("sat_status_normal")
+		if !v.IsActive {
+			status = i18n.T("sat_status_failed")
+		}
+		fmt.Printf(i18n.T("sat_list_item"),
+			v.ID, v.Name, ccMark, typeMark, bodyName,
+			v.Power, v.DataStored, v.DeltaVRemaining, status)
 	}
 }
 
 // vesselStatus 显示航天器详细信息
 func (r *Repl) vesselStatus(vesselID string) {
 	var v *domain.Vessel
-	for _, vv := range r.game.Vessels {
-		if vv.ID == vesselID {
-			v = &vv
+	for i := range r.game.Vessels {
+		if r.game.Vessels[i].ID == vesselID {
+			v = &r.game.Vessels[i]
 			break
 		}
 	}
 	if v == nil {
-		fmt.Printf("错误: 未找到航天器 '%s'\n", vesselID)
+		fmt.Printf(i18n.T("error_vessel_not_found"), vesselID)
 		return
 	}
 	if !v.IsActive {
-		fmt.Println("航天器已失效。")
+		fmt.Println(i18n.T("error_vessel_inactive"))
 		return
 	}
 
 	if v.OrbitBodyID == "deep_space" {
-		fmt.Printf("=== 航天器 %s (%s) 深空状态 ===\n", v.Name, v.ID)
-		fmt.Printf("类型: %s\n", v.Type)
-		fmt.Printf("出发天体: %s\n", v.DepartureBody)
-		fmt.Printf("剩余 Δv: %.0f m/s\n", v.DeltaVRemaining)
-		fmt.Printf("电力: %.0f / %.0f Wh\n", v.Power, v.MaxPower)
-		fmt.Printf("数据: %.0f MB 已存储\n", v.DataStored)
-		fmt.Printf("数据率: %.0f kbps\n", v.DataRate)
-		fmt.Printf("状态: %s\n", map[bool]string{true: "正常运行", false: "失效"}[v.IsActive])
+		fmt.Printf(i18n.T("sat_status_deep_space_title"), v.Name, v.ID)
+		fmt.Printf(i18n.T("sat_status_type"), v.Type)
+		fmt.Printf(i18n.T("sat_status_departure"), v.DepartureBody)
+		fmt.Printf(i18n.T("sat_status_dv"), v.DeltaVRemaining)
+		fmt.Printf(i18n.T("sat_status_power"), v.Power, v.MaxPower)
+		fmt.Printf(i18n.T("sat_status_data"), v.DataStored)
+		fmt.Printf(i18n.T("sat_status_datarate"), v.DataRate)
+		fmt.Printf(i18n.T("sat_status_condition"), map[bool]string{true: i18n.T("sat_status_normal"), false: i18n.T("sat_status_failed")}[v.IsActive])
 		if !v.ArrivalTime.IsZero() {
-			fmt.Printf("预计到达: %s\n", v.ArrivalTime.Format("2006-01-02"))
+			fmt.Printf(i18n.T("sat_status_arrival"), v.ArrivalTime.Format("2006-01-02"))
 		}
 		if v.IsAssembly {
-			fmt.Printf("组合体状态: 已对接 %d 个航天器\n", len(v.DockedWith))
-			fmt.Printf("对接列表: %s\n", strings.Join(v.DockedWith, ", "))
+			fmt.Printf(i18n.T("sat_status_assembly"), len(v.DockedWith))
+			fmt.Printf(i18n.T("sat_status_docked_list"), strings.Join(v.DockedWith, ", "))
 		}
 		if len(v.CargoBays) > 0 {
-			fmt.Println("货舱信息:")
+			fmt.Println(i18n.T("sat_status_cargo"))
 			for _, bay := range v.CargoBays {
-				fmt.Printf("  货舱 %d: %d 件货物\n", bay.Index, len(bay.Loaded))
+				fmt.Printf(i18n.T("sat_status_cargo_bay"), bay.Index, len(bay.Loaded))
 				for i, item := range bay.Loaded {
-					fmt.Printf("    [%d] %s (%s)\n", i+1, r.getCargoName(item), item.Type)
+					fmt.Printf(i18n.T("sat_status_cargo_item"), i+1, r.getCargoName(item), item.Type)
 				}
 			}
 		}
-		fmt.Printf("控制中心: %s\n", map[bool]string{true: "✅ 是", false: "❌ 否"}[v.HasControlCenter])
+		fmt.Printf(i18n.T("sat_status_control"), map[bool]string{true: i18n.T("sat_yes"), false: i18n.T("sat_no")}[v.HasControlCenter])
 		if len(v.Firmware) > 0 {
-			fmt.Printf("已连接固件: %d 个\n", len(v.Firmware))
+			fmt.Printf(i18n.T("sat_status_firmware"), len(v.Firmware))
 			for _, fw := range v.Firmware {
 				for _, vv := range r.game.Vessels {
 					if vv.ID == fw {
-						fmt.Printf("  - %s\n", vv.Name)
+						fmt.Printf(i18n.T("sat_status_firmware_item"), vv.Name)
 						break
 					}
 				}
@@ -337,13 +338,13 @@ func (r *Repl) vesselStatus(vesselID string) {
 	}
 
 	if v.OrbitBodyID == "docked" {
-		fmt.Printf("航天器 %s 已与组合体对接，状态: 已合并\n", v.Name)
+		fmt.Printf(i18n.T("sat_status_docked"), v.Name)
 		return
 	}
 
 	body, ok := r.game.StarSystem.CelestialBodies[v.OrbitBodyID]
 	if !ok {
-		fmt.Println("错误: 无法获取天体数据")
+		fmt.Println(i18n.T("error_body_not_found"))
 		return
 	}
 
@@ -352,47 +353,47 @@ func (r *Repl) vesselStatus(vesselID string) {
 	v_c := engine.CircularOrbitVelocity(body.GM, radius)
 	v_esc := engine.EscapeVelocity(body.GM, radius)
 
-	fmt.Printf("=== 航天器 %s (%s) ===\n", v.Name, v.ID)
-	fmt.Printf("类型: %s\n", v.Type)
-	fmt.Printf("位置: %s 轨道\n", body.Name)
-	fmt.Printf("轨道层: %s (高度 %.0f km)\n", layerName, v.OrbitAltitude)
-	fmt.Printf("轨道半径: %.0f km\n", radius)
-	fmt.Printf("圆轨道速度: %.2f km/s\n", v_c)
-	fmt.Printf("逃逸速度: %.2f km/s\n", v_esc)
-	fmt.Printf("剩余 Δv: %.0f m/s\n", v.DeltaVRemaining)
-	fmt.Printf("发射时间: %s\n", v.LaunchTime.Format("2006-01-02"))
-	fmt.Printf("电力: %.0f / %.0f Wh\n", v.Power, v.MaxPower)
-	fmt.Printf("数据: %.0f MB 已存储\n", v.DataStored)
-	fmt.Printf("数据率: %.0f kbps\n", v.DataRate)
-	fmt.Printf("状态: %s\n", map[bool]string{true: "正常运行", false: "失效"}[v.IsActive])
+	fmt.Printf(i18n.T("sat_status_title"), v.Name, v.ID)
+	fmt.Printf(i18n.T("sat_status_type"), v.Type)
+	fmt.Printf(i18n.T("sat_status_body"), body.Name)
+	fmt.Printf(i18n.T("sat_status_layer"), layerName, v.OrbitAltitude)
+	fmt.Printf(i18n.T("sat_status_radius"), radius)
+	fmt.Printf(i18n.T("sat_status_circular_velocity"), v_c)
+	fmt.Printf(i18n.T("sat_status_escape_velocity"), v_esc)
+	fmt.Printf(i18n.T("sat_status_dv"), v.DeltaVRemaining)
+	fmt.Printf(i18n.T("sat_status_launch_time"), v.LaunchTime.Format("2006-01-02"))
+	fmt.Printf(i18n.T("sat_status_power"), v.Power, v.MaxPower)
+	fmt.Printf(i18n.T("sat_status_data"), v.DataStored)
+	fmt.Printf(i18n.T("sat_status_datarate"), v.DataRate)
+	fmt.Printf(i18n.T("sat_status_condition"), map[bool]string{true: i18n.T("sat_status_normal"), false: i18n.T("sat_status_failed")}[v.IsActive])
 	if v.IsAssembly {
-		fmt.Printf("组合体状态: 已对接 %d 个航天器\n", len(v.DockedWith))
-		fmt.Printf("对接列表: %s\n", strings.Join(v.DockedWith, ", "))
+		fmt.Printf(i18n.T("sat_status_assembly"), len(v.DockedWith))
+		fmt.Printf(i18n.T("sat_status_docked_list"), strings.Join(v.DockedWith, ", "))
 	}
 	if len(v.CargoBays) > 0 {
-		fmt.Println("货舱信息:")
+		fmt.Println(i18n.T("sat_status_cargo"))
 		for _, bay := range v.CargoBays {
-			fmt.Printf("  货舱 %d: %d 件货物\n", bay.Index, len(bay.Loaded))
+			fmt.Printf(i18n.T("sat_status_cargo_bay"), bay.Index, len(bay.Loaded))
 			for i, item := range bay.Loaded {
-				fmt.Printf("    [%d] %s (%s)\n", i+1, r.getCargoName(item), item.Type)
+				fmt.Printf(i18n.T("sat_status_cargo_item"), i+1, r.getCargoName(item), item.Type)
 			}
 		}
 	}
-	fmt.Printf("控制中心: %s\n", map[bool]string{true: "✅ 是", false: "❌ 否"}[v.HasControlCenter])
+	fmt.Printf(i18n.T("sat_status_control"), map[bool]string{true: i18n.T("sat_yes"), false: i18n.T("sat_no")}[v.HasControlCenter])
 	if len(v.Firmware) > 0 {
-		fmt.Printf("已连接固件: %d 个\n", len(v.Firmware))
+		fmt.Printf(i18n.T("sat_status_firmware"), len(v.Firmware))
 		for _, fw := range v.Firmware {
 			for _, vv := range r.game.Vessels {
 				if vv.ID == fw {
-					fmt.Printf("  - %s\n", vv.Name)
+					fmt.Printf(i18n.T("sat_status_firmware_item"), vv.Name)
 					break
 				}
 			}
 		}
 	}
-	fmt.Println("模块列表:")
+	fmt.Println(i18n.T("sat_status_modules"))
 	for _, m := range v.Modules {
-		fmt.Printf("  - %s (%s): 功耗 %.0fW, 数据率 %.0f kbps\n", m.Name, m.Type, m.PowerConsume, m.DataRate)
+		fmt.Printf(i18n.T("sat_status_module"), m.Name, m.Type, m.PowerConsume, m.DataRate)
 	}
 }
 
@@ -407,15 +408,15 @@ func (r *Repl) vesselMeasure(vesselID string) {
 		}
 	}
 	if v == nil {
-		fmt.Printf("错误: 未找到航天器 '%s'\n", vesselID)
+		fmt.Printf(i18n.T("error_vessel_not_found"), vesselID)
 		return
 	}
 	if !v.IsActive {
-		fmt.Println("航天器已失效，无法采集数据。")
+		fmt.Println(i18n.T("error_vessel_inactive"))
 		return
 	}
 	if v.OrbitBodyID == "docked" {
-		fmt.Println("航天器已对接为组合体的一部分，请使用组合体的ID进行操作。")
+		fmt.Println(i18n.T("sat_measure_docked"))
 		return
 	}
 	hasSensor := false
@@ -426,11 +427,11 @@ func (r *Repl) vesselMeasure(vesselID string) {
 		}
 	}
 	if !hasSensor {
-		fmt.Println("此航天器没有传感器模块，无法采集数据。")
+		fmt.Println(i18n.T("sat_measure_no_sensor"))
 		return
 	}
 	if v.Power < r.cfg.Satellite.MeasurePowerCost {
-		fmt.Println("电力不足，无法采集数据。")
+		fmt.Printf(i18n.T("sat_measure_power_low"), r.cfg.Satellite.MeasurePowerCost)
 		return
 	}
 	v.Power -= r.cfg.Satellite.MeasurePowerCost
@@ -441,7 +442,7 @@ func (r *Repl) vesselMeasure(vesselID string) {
 		}
 	}
 	v.DataStored += dataAmount
-	fmt.Printf("数据采集完成，获得 %.2f MB 数据。当前电力: %.0f Wh，数据: %.0f MB\n", dataAmount, v.Power, v.DataStored)
+	fmt.Printf(i18n.T("sat_measure_ok"), dataAmount, v.Power, v.DataStored)
 }
 
 func (r *Repl) vesselSend(vesselID string) {
@@ -453,19 +454,19 @@ func (r *Repl) vesselSend(vesselID string) {
 		}
 	}
 	if v == nil {
-		fmt.Printf("错误: 未找到航天器 '%s'\n", vesselID)
+		fmt.Printf(i18n.T("error_vessel_not_found"), vesselID)
 		return
 	}
 	if !v.IsActive {
-		fmt.Println("航天器已失效，无法发送数据。")
+		fmt.Println(i18n.T("error_vessel_inactive"))
 		return
 	}
 	if v.OrbitBodyID == "docked" {
-		fmt.Println("航天器已对接为组合体的一部分，请使用组合体的ID进行操作。")
+		fmt.Println(i18n.T("sat_send_docked"))
 		return
 	}
 	if v.DataStored == 0 {
-		fmt.Println("没有数据可发送。")
+		fmt.Println(i18n.T("sat_send_no_data"))
 		return
 	}
 	hasComms := false
@@ -476,17 +477,17 @@ func (r *Repl) vesselSend(vesselID string) {
 		}
 	}
 	if !hasComms {
-		fmt.Println("此航天器没有通信模块，无法发送数据。")
+		fmt.Println(i18n.T("sat_send_no_comms"))
 		return
 	}
 	if v.Power < r.cfg.Satellite.SendPowerCost {
-		fmt.Println("电力不足，无法发送数据。")
+		fmt.Printf(i18n.T("sat_send_power_low"), r.cfg.Satellite.SendPowerCost)
 		return
 	}
 	v.Power -= r.cfg.Satellite.SendPowerCost
 	reward := int64(v.DataStored * float64(r.cfg.Satellite.DataRewardPerMB))
 	r.game.Player.Credits += reward
-	fmt.Printf("数据发送成功！获得 %d 信用点。当前电力: %.0f Wh\n", reward, v.Power)
+	fmt.Printf(i18n.T("sat_send_ok"), reward, v.Power)
 	v.DataStored = 0
 }
 
@@ -499,21 +500,16 @@ func (r *Repl) vesselPoint(vesselID string, target string) {
 		}
 	}
 	if v == nil {
-		fmt.Printf("错误: 未找到航天器 '%s'\n", vesselID)
+		fmt.Printf(i18n.T("error_vessel_not_found"), vesselID)
 		return
 	}
 	if !v.IsActive {
-		fmt.Println("航天器已失效，无法调整姿态。")
+		fmt.Println(i18n.T("error_vessel_inactive"))
 		return
 	}
 	if v.OrbitBodyID == "docked" {
-		fmt.Println("航天器已对接为组合体的一部分，请使用组合体的ID进行操作。")
+		fmt.Println(i18n.T("sat_point_docked"))
 		return
 	}
-	fmt.Printf("航天器 %s 已将姿态指向 %s (模拟操作)\n", v.Name, target)
+	fmt.Printf(i18n.T("sat_point_ok"), v.Name, target)
 }
-
-// ==================== sat 命令别名（兼容旧命令） ====================
-
-// 为了方便，保留 sat 子命令作为 vessel 的别名
-// 在 repl.go 中，sat 命令将调用这些函数

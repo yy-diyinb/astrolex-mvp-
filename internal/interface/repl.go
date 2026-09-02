@@ -11,6 +11,7 @@ import (
 
 	"astrolex/internal/config"
 	"astrolex/internal/domain"
+	"astrolex/internal/i18n"
 )
 
 type Repl struct {
@@ -18,7 +19,7 @@ type Repl struct {
 	cfg             *config.GameConfig
 	reader          *bufio.Reader
 	activeContractID string
-	pendingPrograms map[string]*domain.ECCLProgram // 待上传的ECCL程序
+	pendingPrograms map[string]*domain.ECCLProgram
 }
 
 func NewRepl(g *domain.Game, cfg *config.GameConfig) *Repl {
@@ -32,7 +33,7 @@ func NewRepl(g *domain.Game, cfg *config.GameConfig) *Repl {
 }
 
 func (r *Repl) Run() {
-	fmt.Println("Astrolex MVP - 输入 help 查看命令")
+	fmt.Println(i18n.T("welcome"))
 	for {
 		fmt.Print("> ")
 		input, _ := r.reader.ReadString('\n')
@@ -55,44 +56,47 @@ func (r *Repl) handleCommand(input string) {
 	cmd := parts[0]
 	switch cmd {
 	case "help":
-		fmt.Println("可用命令: design, edit, simulate, list, contract, accept, launch, done, budget, window, date, tick, sat, orbit, cargo, program, assembly, save, load, exit")
-		fmt.Println("  design [satellite]  - 设计火箭或卫星")
-		fmt.Println("  edit <design|satellite> <ID> - 编辑已保存的设计")
-		fmt.Println("  list [parts|designs|satellites|saves] - 列出零件、火箭设计、卫星设计或存档")
-		fmt.Println("  sat [list|status|measure|send|point] - 在轨航天器控制")
-		fmt.Println("  orbit [info|transfer|escape|dock|travel|release|flyby] - 航天器轨道操作")
-		fmt.Println("    orbit flyby plan <航天器ID>          - 推荐下一个飞掠目标")
-		fmt.Println("    orbit flyby execute <航天器ID> <行星ID> [高度] - 执行飞掠")
-		fmt.Println("  launch <设计ID> [目标天体ID] [轨道层] - 执行发射（轨道层: low/medium/high）")
-		fmt.Println("  contract / accept / done / budget - 合约系统")
-		fmt.Println("  window <目标天体ID> - 查看发射窗口")
-		fmt.Println("  date / tick <天数> - 时间管理")
-		fmt.Println("  cargo info <rocket|satellite> <ID> - 查看货舱装载信息")
-		fmt.Println("  cargo load <火箭设计ID> <货舱序号> <货物类型> <货物ID> - 装载货物到火箭货舱")
-		fmt.Println("  program list                    - 列出所有程序")
-		fmt.Println("  program edit <名称>             - 创建或编辑程序")
-		fmt.Println("  program upload <程序ID> <航天器ID> - 上传程序到航天器")
-		fmt.Println("  program run <程序ID> <航天器ID>   - 在航天器上运行程序")
-		fmt.Println("  program stop <程序ID> <航天器ID>  - 停止运行中的程序")
-		fmt.Println("  program logs <程序ID> <航天器ID>  - 查看程序日志")
-		fmt.Println("  program status <程序ID> <航天器ID> - 查看程序状态")
-		fmt.Println("  assembly create <名称>      - 创建组装项目")
-		fmt.Println("  assembly add <项目ID> <模块ID> <数量> - 添加步骤")
-		fmt.Println("  assembly list              - 列出所有项目")
-		fmt.Println("  assembly status <项目ID>   - 查看项目状态")
-		fmt.Println("  assembly start <项目ID>    - 开始组装")
-		fmt.Println("  assembly step <项目ID>     - 推进到下一步")
-		fmt.Println("  assembly pause <项目ID>    - 暂停组装")
-		fmt.Println("  assembly resume <项目ID>   - 恢复组装")
-		fmt.Println("  assembly delete <项目ID>   - 删除项目")
-		fmt.Println("  assembly program <项目ID> <程序ID> - 关联ECCL程序")
-		fmt.Println("  save [槽位名] - 保存游戏（默认 default）")
-		fmt.Println("  load <槽位名> - 加载存档")
-		fmt.Println("  list saves - 列出所有存档槽位")
+		fmt.Println(i18n.T("help_available"))
+		fmt.Println(i18n.T("help_design"))
+		fmt.Println(i18n.T("help_edit"))
+		fmt.Println(i18n.T("help_list"))
+		fmt.Println(i18n.T("help_sat"))
+		fmt.Println(i18n.T("help_orbit"))
+		fmt.Println(i18n.T("help_orbit_flyby_plan"))
+		fmt.Println(i18n.T("help_orbit_flyby_execute"))
+		fmt.Println(i18n.T("help_launch"))
+		fmt.Println(i18n.T("help_contract"))
+		fmt.Println(i18n.T("help_window"))
+		fmt.Println(i18n.T("help_date"))
+		fmt.Println(i18n.T("help_cargo"))
+		fmt.Println(i18n.T("help_cargo_load"))
+		fmt.Println(i18n.T("help_program"))
+		fmt.Println(i18n.T("help_program_list"))
+		fmt.Println(i18n.T("help_program_edit"))
+		fmt.Println(i18n.T("help_program_upload"))
+		fmt.Println(i18n.T("help_program_run"))
+		fmt.Println(i18n.T("help_program_stop"))
+		fmt.Println(i18n.T("help_program_logs"))
+		fmt.Println(i18n.T("help_program_status"))
+		fmt.Println(i18n.T("help_assembly"))
+		fmt.Println(i18n.T("help_assembly_create"))
+		fmt.Println(i18n.T("help_assembly_add"))
+		fmt.Println(i18n.T("help_assembly_list"))
+		fmt.Println(i18n.T("help_assembly_status"))
+		fmt.Println(i18n.T("help_assembly_start"))
+		fmt.Println(i18n.T("help_assembly_step"))
+		fmt.Println(i18n.T("help_assembly_pause"))
+		fmt.Println(i18n.T("help_assembly_resume"))
+		fmt.Println(i18n.T("help_assembly_delete"))
+		fmt.Println(i18n.T("help_assembly_program"))
+		fmt.Println(i18n.T("help_save"))
+		fmt.Println(i18n.T("help_load"))
+		fmt.Println(i18n.T("help_list_saves"))
+		fmt.Println(i18n.T("help_exit"))
 
 	case "list":
 		if len(parts) < 2 {
-			fmt.Println("用法: list [parts|designs|satellites|saves]")
+			fmt.Println(i18n.T("usage_list"))
 			return
 		}
 		sub := parts[1]
@@ -106,7 +110,7 @@ func (r *Repl) handleCommand(input string) {
 		case "saves":
 			r.listSaves()
 		default:
-			fmt.Printf("未知列表类型 '%s'\n", sub)
+			fmt.Printf(i18n.T("unknown_list_type")+"\n", sub)
 		}
 
 	case "simulate":
@@ -115,13 +119,15 @@ func (r *Repl) handleCommand(input string) {
 	case "design":
 		if len(parts) >= 2 && parts[1] == "satellite" {
 			r.designSatellite()
+		} else if len(parts) >= 2 && parts[1] == "list" {
+			r.listDesigns()
 		} else {
 			r.designRocket()
 		}
 
 	case "edit":
 		if len(parts) < 3 {
-			fmt.Println("用法: edit <design|satellite> <ID>")
+			fmt.Println(i18n.T("invalid_usage") + " edit <design|satellite> <ID>")
 			return
 		}
 		editType := parts[1]
@@ -131,7 +137,7 @@ func (r *Repl) handleCommand(input string) {
 		} else if editType == "satellite" {
 			r.editSatellite(editID)
 		} else {
-			fmt.Printf("未知编辑类型 '%s'\n", editType)
+			fmt.Printf(i18n.T("unknown_command")+"\n", editType)
 		}
 
 	case "contract":
@@ -139,15 +145,15 @@ func (r *Repl) handleCommand(input string) {
 
 	case "accept":
 		if len(parts) < 2 {
-			fmt.Println("用法: accept <合约ID>")
+			fmt.Println(i18n.T("invalid_usage") + " accept <合约ID>")
 			return
 		}
 		r.acceptContract(parts[1])
 
 	case "launch":
 		if len(parts) < 2 {
-			fmt.Println("用法: launch <设计ID> [目标天体ID] [轨道层]")
-			fmt.Println("  轨道层: low, medium, high (或 0,1,2)，默认为 high")
+			fmt.Println(i18n.T("invalid_usage") + " launch <设计ID> [目标天体ID] [轨道层]")
+			fmt.Println(i18n.T("help_launch"))
 			return
 		}
 		designID := parts[1]
@@ -169,7 +175,7 @@ func (r *Repl) handleCommand(input string) {
 
 	case "window":
 		if len(parts) < 2 {
-			fmt.Println("用法: window <目标天体ID>")
+			fmt.Println(i18n.T("invalid_usage") + " window <目标天体ID>")
 			return
 		}
 		r.windowCommand(parts[1])
@@ -179,20 +185,20 @@ func (r *Repl) handleCommand(input string) {
 
 	case "tick":
 		if len(parts) < 2 {
-			fmt.Println("用法: tick <天数>")
+			fmt.Println(i18n.T("invalid_usage") + " tick <天数>")
 			return
 		}
 		days, err := strconv.Atoi(parts[1])
 		if err != nil || days <= 0 {
-			fmt.Println("请输入正整数的天数")
+			fmt.Println(i18n.T("tick_invalid_days"))
 			return
 		}
 		r.advanceTime(days)
 
 	case "sat":
 		if len(parts) < 2 {
-			fmt.Println("用法: sat <子命令> [参数]")
-			fmt.Println("  子命令: list, status <航天器ID>, measure <航天器ID>, send <航天器ID>, point <航天器ID> <目标>")
+			fmt.Println(i18n.T("invalid_usage") + " sat <子命令> [参数]")
+			fmt.Println(i18n.T("help_sat"))
 			return
 		}
 		subCmd := parts[1]
@@ -201,93 +207,76 @@ func (r *Repl) handleCommand(input string) {
 			r.vesselList()
 		case "status":
 			if len(parts) < 3 {
-				fmt.Println("用法: sat status <航天器ID>")
+				fmt.Println(i18n.T("invalid_usage") + " sat status <航天器ID>")
 				return
 			}
 			r.vesselStatus(parts[2])
 		case "measure":
 			if len(parts) < 3 {
-				fmt.Println("用法: sat measure <航天器ID>")
+				fmt.Println(i18n.T("invalid_usage") + " sat measure <航天器ID>")
 				return
 			}
 			r.vesselMeasure(parts[2])
 		case "send":
 			if len(parts) < 3 {
-				fmt.Println("用法: sat send <航天器ID>")
+				fmt.Println(i18n.T("invalid_usage") + " sat send <航天器ID>")
 				return
 			}
 			r.vesselSend(parts[2])
 		case "point":
 			if len(parts) < 4 {
-				fmt.Println("用法: sat point <航天器ID> <目标>")
+				fmt.Println(i18n.T("invalid_usage") + " sat point <航天器ID> <目标>")
 				return
 			}
 			r.vesselPoint(parts[2], parts[3])
 		default:
-			fmt.Printf("未知卫星子命令 '%s'\n", subCmd)
+			fmt.Printf(i18n.T("unknown_command")+"\n", subCmd)
 		}
 
 	case "orbit":
 		if len(parts) < 2 {
-			fmt.Println("用法: orbit <子命令> [参数]")
-			fmt.Println("  子命令: info <航天器ID>, transfer <航天器ID> <层>, escape <航天器ID>, dock <主航天器ID> <从航天器ID>, travel <航天器ID> <目标天体ID>, release <航天器ID> <货舱序号> <货物索引>, flyby plan <航天器ID>, flyby execute <航天器ID> <行星ID> [高度]")
+			fmt.Println(i18n.T("invalid_usage") + " orbit <子命令> [参数]")
+			fmt.Println(i18n.T("help_orbit"))
 			return
 		}
 		r.handleOrbitCommand(parts[1], parts[2:])
 
 	case "cargo":
 		if len(parts) < 2 {
-			fmt.Println("用法: cargo <子命令> [参数]")
-			fmt.Println("  子命令: info <rocket|satellite> <ID> - 查看货舱信息")
-			fmt.Println("          load <火箭设计ID> <货舱序号> <货物类型> <货物ID> - 装载货物")
-			fmt.Println("          货物类型: rocket, satellite, part")
+			fmt.Println(i18n.T("invalid_usage") + " cargo <子命令> [参数]")
+			fmt.Println(i18n.T("help_cargo"))
 			return
 		}
 		subCmd := parts[1]
 		switch subCmd {
 		case "info":
 			if len(parts) < 4 {
-				fmt.Println("用法: cargo info <rocket|satellite> <ID>")
+				fmt.Println(i18n.T("invalid_usage") + " cargo info <rocket|satellite> <ID>")
 				return
 			}
 			r.cargoInfoCommand(parts[2], parts[3])
 		case "load":
 			if len(parts) < 6 {
-				fmt.Println("用法: cargo load <火箭设计ID> <货舱序号> <货物类型> <货物ID>")
+				fmt.Println(i18n.T("invalid_usage") + " cargo load <火箭设计ID> <货舱序号> <货物类型> <货物ID>")
 				return
 			}
 			r.cargoLoadCommand(parts[2], parts[3], parts[4], parts[5])
 		default:
-			fmt.Printf("未知 cargo 子命令 '%s'\n", subCmd)
+			fmt.Printf(i18n.T("unknown_command")+"\n", subCmd)
 		}
 
 	case "program":
 		if len(parts) < 2 {
-			fmt.Println("用法: program <子命令> [参数]")
-			fmt.Println("  program list                    - 列出所有程序")
-			fmt.Println("  program edit <名称>             - 创建或编辑程序")
-			fmt.Println("  program upload <程序ID> <航天器ID> - 上传程序到航天器")
-			fmt.Println("  program run <程序ID> <航天器ID>   - 在航天器上运行程序")
-			fmt.Println("  program stop <程序ID> <航天器ID>  - 停止运行中的程序")
-			fmt.Println("  program logs <程序ID> <航天器ID>  - 查看程序日志")
-			fmt.Println("  program status <程序ID> <航天器ID> - 查看程序状态")
+			fmt.Println(i18n.T("invalid_usage") + " program <子命令> [参数]")
+			fmt.Println(i18n.T("help_program"))
 			return
 		}
 		r.handleProgramCommand(parts[1], parts[2:])
 
 	case "assembly":
 		if len(parts) < 2 {
-			fmt.Println("用法: assembly <子命令> [参数]")
-			fmt.Println("  create <名称>           - 创建组装项目")
-			fmt.Println("  add <项目ID> <模块ID> <数量> - 添加步骤")
-			fmt.Println("  list                   - 列出所有项目")
-			fmt.Println("  status <项目ID>        - 查看项目状态")
-			fmt.Println("  start <项目ID>         - 开始组装")
-			fmt.Println("  step <项目ID>          - 推进到下一步")
-			fmt.Println("  pause <项目ID>         - 暂停组装")
-			fmt.Println("  resume <项目ID>        - 恢复组装")
-			fmt.Println("  delete <项目ID>        - 删除项目")
-			fmt.Println("  program <项目ID> <程序ID> - 关联ECCL程序")
+			fmt.Println(i18n.T("invalid_usage") + " assembly <子命令> [参数]")
+			fmt.Println(i18n.T("help_assembly"))
 			return
 		}
 		r.handleAssemblyCommand(parts[1], parts[2:])
@@ -301,19 +290,19 @@ func (r *Repl) handleCommand(input string) {
 
 	case "load":
 		if len(parts) < 2 {
-			fmt.Println("用法: load <槽位名>")
+			fmt.Println(i18n.T("invalid_usage") + " load <槽位名>")
 			return
 		}
 		if err := r.loadGame(parts[1]); err != nil {
-			fmt.Printf("加载存档失败: %v\n", err)
+			fmt.Printf(i18n.T("load_failed")+"\n", err)
 		}
 
 	case "exit", "quit":
-		fmt.Println("退出游戏。")
+		fmt.Println(i18n.T("exit"))
 		os.Exit(0)
 
 	default:
-		fmt.Println("未知命令")
+		fmt.Println(i18n.T("unknown_command"))
 	}
 }
 
@@ -325,20 +314,20 @@ func (r *Repl) saveGame(slot string) {
 	}
 	savesDir := "saves"
 	if err := os.MkdirAll(savesDir, 0755); err != nil {
-		fmt.Printf("创建存档目录失败: %v\n", err)
+		fmt.Printf(i18n.T("save_failed")+"\n", err)
 		return
 	}
 	filename := filepath.Join(savesDir, fmt.Sprintf("slot_%s.json", slot))
 	data, err := json.MarshalIndent(r.game, "", "  ")
 	if err != nil {
-		fmt.Printf("序列化存档失败: %v\n", err)
+		fmt.Printf(i18n.T("save_failed")+"\n", err)
 		return
 	}
 	if err := os.WriteFile(filename, data, 0644); err != nil {
-		fmt.Printf("写入存档失败: %v\n", err)
+		fmt.Printf(i18n.T("save_failed")+"\n", err)
 		return
 	}
-	fmt.Printf("游戏已保存到槽位 '%s'\n", slot)
+	fmt.Printf(i18n.T("save_success")+"\n", slot)
 }
 
 func (r *Repl) loadGame(slot string) error {
@@ -367,7 +356,7 @@ func (r *Repl) loadGame(slot string) error {
 			r.activeContractID = ""
 		}
 	}
-	fmt.Printf("游戏已从槽位 '%s' 加载\n", slot)
+	fmt.Printf(i18n.T("load_success")+"\n", slot)
 	return nil
 }
 
@@ -376,13 +365,13 @@ func (r *Repl) listSaves() {
 	files, err := os.ReadDir(savesDir)
 	if err != nil {
 		if os.IsNotExist(err) {
-			fmt.Println("没有存档。")
+			fmt.Println(i18n.T("no_saves"))
 		} else {
-			fmt.Printf("读取存档目录失败: %v\n", err)
+			fmt.Printf(i18n.T("read_saves_failed")+"\n", err)
 		}
 		return
 	}
-	fmt.Println("可用的存档槽位:")
+	fmt.Println(i18n.T("available_save_slots"))
 	for _, f := range files {
 		if !f.IsDir() && strings.HasPrefix(f.Name(), "slot_") && strings.HasSuffix(f.Name(), ".json") {
 			slot := strings.TrimPrefix(f.Name(), "slot_")

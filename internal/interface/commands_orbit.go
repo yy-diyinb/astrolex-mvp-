@@ -8,6 +8,7 @@ import (
 
 	"astrolex/internal/domain"
 	"astrolex/internal/engine"
+	"astrolex/internal/i18n"
 )
 
 // ==================== 辅助函数 ====================
@@ -15,7 +16,7 @@ import (
 // getOrbitLayerName 根据高度返回轨道层名称
 func (r *Repl) getOrbitLayerName(body domain.CelestialBody, altitude float64) string {
 	if len(body.OrbitalLayers) == 0 {
-		return "未知轨道"
+		return i18n.T("orbit_layer_unknown")
 	}
 	radius := body.Radius + altitude
 	for _, layer := range body.OrbitalLayers {
@@ -26,9 +27,9 @@ func (r *Repl) getOrbitLayerName(body domain.CelestialBody, altitude float64) st
 		}
 	}
 	if radius > body.Radius+body.OrbitalLayers[len(body.OrbitalLayers)-1].AltitudeMax {
-		return "高轨道 (超限)"
+		return i18n.T("orbit_layer_high")
 	}
-	return "低轨道 (超限)"
+	return i18n.T("orbit_layer_low")
 }
 
 // getOrbitLayerIndex 返回当前所在轨道层的索引（0=最低）
@@ -111,12 +112,8 @@ func (r *Repl) getCargoName(item domain.CargoItem) string {
 			return p.Name
 		}
 	}
-	return "未知货物"
+	return i18n.T("cargo_unknown")
 }
-
-// ==================== 控制中心辅助 ====================
-
-
 
 // ==================== 获取航天器日心状态 ====================
 
@@ -131,7 +128,7 @@ func (r *Repl) getFlybyState(v *domain.Vessel) (*engine.FlybyState, error) {
 	if state.Pos[0] == 0 && state.Pos[1] == 0 && v.OrbitBodyID != "deep_space" {
 		body, ok := r.game.StarSystem.CelestialBodies[v.OrbitBodyID]
 		if !ok {
-			return nil, fmt.Errorf("无法获取天体数据")
+			return nil, fmt.Errorf(i18n.T("error_body_not_found"), v.OrbitBodyID)
 		}
 		px, py := engine.PositionAtTime(body, r.game.CurrentTime)
 		vx, vy := engine.OrbitalVelocity(body, r.game.CurrentTime)
@@ -173,42 +170,42 @@ func (r *Repl) orbitCommand(vesselID string) {
 		}
 	}
 	if v == nil {
-		fmt.Printf("错误: 未找到航天器 '%s'\n", vesselID)
+		fmt.Printf(i18n.T("error_vessel_not_found"), vesselID)
 		return
 	}
 	if !v.IsActive {
-		fmt.Println("航天器已失效。")
+		fmt.Println(i18n.T("error_vessel_inactive"))
 		return
 	}
 
 	if v.OrbitBodyID == "deep_space" {
-		fmt.Printf("=== 航天器 %s (%s) 深空状态 ===\n", v.Name, v.ID)
-		fmt.Printf("类型: %s\n", v.Type)
-		fmt.Printf("出发天体: %s\n", v.DepartureBody)
-		fmt.Printf("日心位置: (%.0f, %.0f) km\n", v.HeliocentricPos[0], v.HeliocentricPos[1])
-		fmt.Printf("日心速度: (%.2f, %.2f) km/s\n", v.HeliocentricVel[0], v.HeliocentricVel[1])
-		fmt.Printf("剩余 Δv: %.0f m/s\n", v.DeltaVRemaining)
-		fmt.Printf("数据: %.0f MB\n", v.DataStored)
-		fmt.Printf("电力: %.0f Wh\n", v.Power)
+		fmt.Printf(i18n.T("orbit_info_deep_space_title"), v.Name, v.ID)
+		fmt.Printf(i18n.T("orbit_info_type"), v.Type)
+		fmt.Printf(i18n.T("orbit_info_departure"), v.DepartureBody)
+		fmt.Printf(i18n.T("orbit_info_heliocentric_pos"), v.HeliocentricPos[0], v.HeliocentricPos[1])
+		fmt.Printf(i18n.T("orbit_info_heliocentric_vel"), v.HeliocentricVel[0], v.HeliocentricVel[1])
+		fmt.Printf(i18n.T("orbit_info_dv_remaining"), v.DeltaVRemaining)
+		fmt.Printf(i18n.T("orbit_info_data"), v.DataStored)
+		fmt.Printf(i18n.T("orbit_info_power"), v.Power)
 		if !v.ArrivalTime.IsZero() {
-			fmt.Printf("预计到达: %s\n", v.ArrivalTime.Format("2006-01-02"))
+			fmt.Printf(i18n.T("orbit_info_arrival"), v.ArrivalTime.Format("2006-01-02"))
 		}
 		if len(v.CargoBays) > 0 {
-			fmt.Println("货舱信息:")
+			fmt.Println(i18n.T("orbit_info_cargo"))
 			for _, bay := range v.CargoBays {
-				fmt.Printf("  货舱 %d: %d 件货物\n", bay.Index, len(bay.Loaded))
+				fmt.Printf(i18n.T("orbit_info_cargo_bay"), bay.Index, len(bay.Loaded))
 				for i, item := range bay.Loaded {
-					fmt.Printf("    [%d] %s (%s)\n", i+1, r.getCargoName(item), item.Type)
+					fmt.Printf(i18n.T("orbit_info_cargo_item"), i+1, r.getCargoName(item), item.Type)
 				}
 			}
 		}
-		fmt.Printf("控制中心: %s\n", map[bool]string{true: "✅ 是", false: "❌ 否"}[v.HasControlCenter])
+		fmt.Printf(i18n.T("orbit_info_control"), map[bool]string{true: i18n.T("sat_yes"), false: i18n.T("sat_no")}[v.HasControlCenter])
 		if len(v.Firmware) > 0 {
-			fmt.Printf("已连接固件: %d 个\n", len(v.Firmware))
+			fmt.Printf(i18n.T("orbit_info_firmware"), len(v.Firmware))
 			for _, fw := range v.Firmware {
 				for _, vv := range r.game.Vessels {
 					if vv.ID == fw {
-						fmt.Printf("  - %s\n", vv.Name)
+						fmt.Printf(i18n.T("orbit_info_firmware_item"), vv.Name)
 						break
 					}
 				}
@@ -219,7 +216,7 @@ func (r *Repl) orbitCommand(vesselID string) {
 
 	body, ok := r.game.StarSystem.CelestialBodies[v.OrbitBodyID]
 	if !ok {
-		fmt.Println("错误: 无法获取天体数据")
+		fmt.Println(i18n.T("error_body_not_found"))
 		return
 	}
 
@@ -228,40 +225,40 @@ func (r *Repl) orbitCommand(vesselID string) {
 	v_c := engine.CircularOrbitVelocity(body.GM, radius)
 	v_esc := engine.EscapeVelocity(body.GM, radius)
 
-	fmt.Printf("=== 航天器 %s 轨道信息 ===\n", v.Name)
-	fmt.Printf("类型: %s\n", v.Type)
-	fmt.Printf("绕转天体: %s\n", body.Name)
-	fmt.Printf("轨道高度: %.0f km\n", v.OrbitAltitude)
-	fmt.Printf("轨道层: %s\n", layerName)
-	fmt.Printf("轨道半径: %.0f km\n", radius)
-	fmt.Printf("圆轨道速度: %.2f km/s\n", v_c)
-	fmt.Printf("逃逸速度: %.2f km/s\n", v_esc)
-	fmt.Printf("剩余 Δv: %.0f m/s\n", v.DeltaVRemaining)
-	fmt.Printf("日心位置: (%.0f, %.0f) km\n", v.HeliocentricPos[0], v.HeliocentricPos[1])
-	fmt.Printf("日心速度: (%.2f, %.2f) km/s\n", v.HeliocentricVel[0], v.HeliocentricVel[1])
+	fmt.Printf(i18n.T("orbit_info_title"), v.Name)
+	fmt.Printf(i18n.T("orbit_info_type"), v.Type)
+	fmt.Printf(i18n.T("orbit_info_body"), body.Name)
+	fmt.Printf(i18n.T("orbit_info_altitude"), v.OrbitAltitude)
+	fmt.Printf(i18n.T("orbit_info_layer"), layerName)
+	fmt.Printf(i18n.T("orbit_info_radius"), radius)
+	fmt.Printf(i18n.T("orbit_info_circular_velocity"), v_c)
+	fmt.Printf(i18n.T("orbit_info_escape_velocity"), v_esc)
+	fmt.Printf(i18n.T("orbit_info_dv_remaining"), v.DeltaVRemaining)
+	fmt.Printf(i18n.T("orbit_info_heliocentric_pos"), v.HeliocentricPos[0], v.HeliocentricPos[1])
+	fmt.Printf(i18n.T("orbit_info_heliocentric_vel"), v.HeliocentricVel[0], v.HeliocentricVel[1])
 	if v.OrbitAltitude > 0 {
-		fmt.Printf("逃逸所需 Δv: %.0f m/s\n", engine.EscapeFromOrbitDeltaV(body.GM, radius)*1000)
+		fmt.Printf(i18n.T("orbit_info_escape_dv"), engine.EscapeFromOrbitDeltaV(body.GM, radius)*1000)
 	}
 	if v.IsAssembly {
-		fmt.Printf("组合体状态: 已对接 %d 个航天器\n", len(v.DockedWith))
-		fmt.Printf("对接列表: %s\n", strings.Join(v.DockedWith, ", "))
+		fmt.Printf(i18n.T("orbit_info_assembly"), len(v.DockedWith))
+		fmt.Printf(i18n.T("orbit_info_docked_with"), strings.Join(v.DockedWith, ", "))
 	}
 	if len(v.CargoBays) > 0 {
-		fmt.Println("货舱信息:")
+		fmt.Println(i18n.T("orbit_info_cargo"))
 		for _, bay := range v.CargoBays {
-			fmt.Printf("  货舱 %d: %d 件货物\n", bay.Index, len(bay.Loaded))
+			fmt.Printf(i18n.T("orbit_info_cargo_bay"), bay.Index, len(bay.Loaded))
 			for i, item := range bay.Loaded {
-				fmt.Printf("    [%d] %s (%s)\n", i+1, r.getCargoName(item), item.Type)
+				fmt.Printf(i18n.T("orbit_info_cargo_item"), i+1, r.getCargoName(item), item.Type)
 			}
 		}
 	}
-	fmt.Printf("控制中心: %s\n", map[bool]string{true: "✅ 是", false: "❌ 否"}[v.HasControlCenter])
+	fmt.Printf(i18n.T("orbit_info_control"), map[bool]string{true: i18n.T("sat_yes"), false: i18n.T("sat_no")}[v.HasControlCenter])
 	if len(v.Firmware) > 0 {
-		fmt.Printf("已连接固件: %d 个\n", len(v.Firmware))
+		fmt.Printf(i18n.T("orbit_info_firmware"), len(v.Firmware))
 		for _, fw := range v.Firmware {
 			for _, vv := range r.game.Vessels {
 				if vv.ID == fw {
-					fmt.Printf("  - %s\n", vv.Name)
+					fmt.Printf(i18n.T("orbit_info_firmware_item"), vv.Name)
 					break
 				}
 			}
@@ -279,25 +276,25 @@ func (r *Repl) transferCommand(vesselID string, targetLayer string) {
 		}
 	}
 	if v == nil {
-		fmt.Printf("错误: 未找到航天器 '%s'\n", vesselID)
+		fmt.Printf(i18n.T("error_vessel_not_found"), vesselID)
 		return
 	}
 	if !v.IsActive {
-		fmt.Println("航天器已失效。")
+		fmt.Println(i18n.T("error_vessel_inactive"))
 		return
 	}
 	if v.OrbitBodyID == "deep_space" {
-		fmt.Println("航天器在深空，无法变轨。使用 'orbit travel' 进行星际航行。")
+		fmt.Println(i18n.T("orbit_transfer_deep_space"))
 		return
 	}
 
 	body, ok := r.game.StarSystem.CelestialBodies[v.OrbitBodyID]
 	if !ok {
-		fmt.Println("错误: 无法获取天体数据")
+		fmt.Println(i18n.T("error_body_not_found"))
 		return
 	}
 	if len(body.OrbitalLayers) == 0 {
-		fmt.Println("该天体没有定义轨道层，无法转移。")
+		fmt.Println(i18n.T("orbit_transfer_no_layers"))
 		return
 	}
 
@@ -315,8 +312,8 @@ func (r *Repl) transferCommand(vesselID string, targetLayer string) {
 		}
 	}
 	if targetIndex == -1 {
-		fmt.Printf("错误: 未找到目标轨道层 '%s'\n", targetLayer)
-		fmt.Printf("可用轨道层: ")
+		fmt.Printf(i18n.T("orbit_transfer_invalid_layer"), targetLayer)
+		fmt.Print(i18n.T("orbit_transfer_available_layers"))
 		for i, layer := range body.OrbitalLayers {
 			fmt.Printf("%d:%s ", i, layer.Name)
 		}
@@ -326,7 +323,7 @@ func (r *Repl) transferCommand(vesselID string, targetLayer string) {
 
 	currentIndex := r.getOrbitLayerIndex(body, v.OrbitAltitude)
 	if currentIndex == targetIndex {
-		fmt.Printf("航天器已在目标轨道层 '%s'\n", body.OrbitalLayers[targetIndex].Name)
+		fmt.Printf(i18n.T("orbit_transfer_already_at"), body.OrbitalLayers[targetIndex].Name)
 		return
 	}
 
@@ -335,23 +332,22 @@ func (r *Repl) transferCommand(vesselID string, targetLayer string) {
 	dv_kmps := engine.OrbitalLayerDeltaV(body.GM, currentRadius, targetRadius)
 	dv_mps := dv_kmps * 1000
 
-	fmt.Printf("从当前轨道 (%.0f km) 转移到 %s (%.0f km)\n",
-		v.OrbitAltitude, body.OrbitalLayers[targetIndex].Name, body.OrbitalLayers[targetIndex].TypicalAltitude)
-	fmt.Printf("需要 Δv: %.0f m/s\n", dv_mps)
+	fmt.Printf(i18n.T("orbit_transfer_info"), v.OrbitAltitude, body.OrbitalLayers[targetIndex].Name, body.OrbitalLayers[targetIndex].TypicalAltitude)
+	fmt.Printf(i18n.T("orbit_transfer_dv"), dv_mps)
 
 	if v.DeltaVRemaining < dv_mps {
-		fmt.Printf("❌ 剩余 Δv 不足! 需要 %.0f m/s, 当前剩余 %.0f m/s\n", dv_mps, v.DeltaVRemaining)
+		fmt.Printf(i18n.T("orbit_transfer_dv_insufficient"), dv_mps, v.DeltaVRemaining)
 		return
 	}
 	if v.Power < 50 {
-		fmt.Println("❌ 电力不足，无法执行变轨。需要至少 50 Wh。")
+		fmt.Printf(i18n.T("orbit_transfer_power_low"), 50)
 		return
 	}
 
 	v.DeltaVRemaining -= dv_mps
 	v.Power -= 50
 	v.OrbitAltitude = body.OrbitalLayers[targetIndex].TypicalAltitude
-	fmt.Printf("✅ 变轨成功！当前轨道高度: %.0f km, 剩余 Δv: %.0f m/s\n", v.OrbitAltitude, v.DeltaVRemaining)
+	fmt.Printf(i18n.T("orbit_transfer_success"), v.OrbitAltitude, v.DeltaVRemaining)
 }
 
 // ==================== orbit escape 命令 ====================
@@ -364,21 +360,21 @@ func (r *Repl) escapeCommand(vesselID string) {
 		}
 	}
 	if v == nil {
-		fmt.Printf("错误: 未找到航天器 '%s'\n", vesselID)
+		fmt.Printf(i18n.T("error_vessel_not_found"), vesselID)
 		return
 	}
 	if !v.IsActive {
-		fmt.Println("航天器已失效。")
+		fmt.Println(i18n.T("error_vessel_inactive"))
 		return
 	}
 	if v.OrbitBodyID == "deep_space" {
-		fmt.Println("航天器已在深空。")
+		fmt.Println(i18n.T("orbit_escape_already"))
 		return
 	}
 
 	body, ok := r.game.StarSystem.CelestialBodies[v.OrbitBodyID]
 	if !ok {
-		fmt.Println("错误: 无法获取天体数据")
+		fmt.Println(i18n.T("error_body_not_found"))
 		return
 	}
 
@@ -387,9 +383,9 @@ func (r *Repl) escapeCommand(vesselID string) {
 		topLayer := body.OrbitalLayers[len(body.OrbitalLayers)-1]
 		topRadius := body.Radius + topLayer.TypicalAltitude
 		if currentRadius < topRadius-100 {
-			fmt.Printf("⚠️ 当前不在最高轨道层！请先变轨到 %s。\n", topLayer.Name)
-			fmt.Printf("  当前高度: %.0f km, 需要: %.0f km\n", v.OrbitAltitude, topLayer.TypicalAltitude)
-			fmt.Println("  使用 'orbit transfer' 变轨到最高层。")
+			fmt.Printf(i18n.T("orbit_escape_not_highest"), topLayer.Name)
+			fmt.Printf(i18n.T("orbit_escape_current_alt"), v.OrbitAltitude, topLayer.TypicalAltitude)
+			fmt.Println(i18n.T("orbit_escape_transfer_hint"))
 			return
 		}
 	}
@@ -397,15 +393,15 @@ func (r *Repl) escapeCommand(vesselID string) {
 	dv_kmps := engine.EscapeFromOrbitDeltaV(body.GM, currentRadius)
 	dv_mps := dv_kmps * 1000
 
-	fmt.Printf("从当前轨道 (%.0f km) 弹射离开 %s\n", v.OrbitAltitude, body.Name)
-	fmt.Printf("需要 Δv: %.0f m/s\n", dv_mps)
+	fmt.Printf(i18n.T("orbit_escape_info"), v.OrbitAltitude, body.Name)
+	fmt.Printf(i18n.T("orbit_escape_dv"), dv_mps)
 
 	if v.DeltaVRemaining < dv_mps {
-		fmt.Printf("❌ 剩余 Δv 不足! 需要 %.0f m/s, 当前剩余 %.0f m/s\n", dv_mps, v.DeltaVRemaining)
+		fmt.Printf(i18n.T("orbit_escape_dv_insufficient"), dv_mps, v.DeltaVRemaining)
 		return
 	}
 	if v.Power < 100 {
-		fmt.Println("❌ 电力不足，无法弹射。需要至少 100 Wh。")
+		fmt.Printf(i18n.T("orbit_escape_power_low"), 100)
 		return
 	}
 
@@ -417,9 +413,9 @@ func (r *Repl) escapeCommand(vesselID string) {
 	px, py := engine.PositionAtTime(body, r.game.CurrentTime)
 	v.HeliocentricPos = [2]float64{px, py}
 	v.HeliocentricVel = [2]float64{v.HeliocentricVel[0], v.HeliocentricVel[1]}
-	fmt.Printf("✅ 弹射成功！航天器 '%s' 已进入深空，离开 %s 引力范围。\n", v.Name, body.Name)
-	fmt.Printf("   剩余 Δv: %.0f m/s\n", v.DeltaVRemaining)
-	fmt.Println("🚀 现在可以使用 'orbit travel' 进行星际航行。")
+	fmt.Printf(i18n.T("orbit_escape_success"), v.Name, body.Name)
+	fmt.Printf(i18n.T("orbit_escape_remaining_dv"), v.DeltaVRemaining)
+	fmt.Println(i18n.T("orbit_escape_travel_hint"))
 }
 
 // ==================== orbit dock 命令 ====================
@@ -434,44 +430,42 @@ func (r *Repl) dockCommand(masterID, slaveID string) {
 		}
 	}
 	if master == nil || slave == nil {
-		fmt.Println("错误: 未找到指定的航天器")
+		fmt.Println(i18n.T("orbit_dock_error_not_found"))
 		return
 	}
 	if !master.IsActive || !slave.IsActive {
-		fmt.Println("错误: 航天器已失效")
+		fmt.Println(i18n.T("orbit_dock_error_inactive"))
 		return
 	}
 	if master.ID == slave.ID {
-		fmt.Println("错误: 不能与自身对接")
+		fmt.Println(i18n.T("orbit_dock_error_self"))
 		return
 	}
 	if master.OrbitBodyID == "deep_space" || slave.OrbitBodyID == "deep_space" {
-		fmt.Println("错误: 深空航天器无法对接（需要轨道上对接）")
+		fmt.Println(i18n.T("orbit_dock_error_deep_space"))
 		return
 	}
 	if master.OrbitBodyID != slave.OrbitBodyID {
-		fmt.Printf("错误: 两个航天器不在同一轨道 (%s vs %s)\n", master.OrbitBodyID, slave.OrbitBodyID)
+		fmt.Printf(i18n.T("orbit_dock_error_diff_orbit"), master.OrbitBodyID, slave.OrbitBodyID)
 		return
 	}
 	if master.OrbitAltitude < 0 || slave.OrbitAltitude < 0 {
-		fmt.Println("错误: 无效轨道高度")
+		fmt.Println(i18n.T("orbit_dock_error_altitude_invalid"))
 		return
 	}
 	if master.OrbitAltitude > slave.OrbitAltitude+100 || master.OrbitAltitude < slave.OrbitAltitude-100 {
-		fmt.Printf("错误: 高度差超过100km (%.0f vs %.0f)\n", master.OrbitAltitude, slave.OrbitAltitude)
+		fmt.Printf(i18n.T("orbit_dock_error_altitude_diff"), master.OrbitAltitude, slave.OrbitAltitude)
 		return
 	}
 	if master.IsAssembly && contains(master.DockedWith, slave.ID) {
-		fmt.Printf("航天器 %s 已经与 %s 对接\n", master.Name, slave.Name)
+		fmt.Printf(i18n.T("orbit_dock_error_already_docked"), master.Name, slave.Name)
 		return
 	}
 	if slave.IsAssembly && contains(slave.DockedWith, master.ID) {
-		fmt.Printf("航天器 %s 已经与 %s 对接\n", slave.Name, master.Name)
+		fmt.Printf(i18n.T("orbit_dock_error_already_docked"), slave.Name, master.Name)
 		return
 	}
-	// 允许任意组合体作为从星，合并后统一为组合体
 
-	// 控制中心与固件逻辑
 	masterHasControl := master.HasControlCenter
 	slaveHasControl := slave.HasControlCenter
 	if slaveHasControl && !masterHasControl {
@@ -479,13 +473,12 @@ func (r *Repl) dockCommand(masterID, slaveID string) {
 	}
 	if !slaveHasControl {
 		master.Firmware = append(master.Firmware, slave.ID)
-		fmt.Printf("🔌 从星 '%s' 已作为固件模块连接至控制中心\n", slave.Name)
+		fmt.Printf(i18n.T("orbit_dock_firmware"), slave.Name)
 	} else {
 		master.Firmware = append(master.Firmware, slave.Firmware...)
-		fmt.Printf("🔌 控制中心已合并，固件列表扩展至 %d 个\n", len(master.Firmware))
+		fmt.Printf(i18n.T("orbit_dock_control"), len(master.Firmware))
 	}
 
-	// 合并数据
 	master.Modules = append(master.Modules, slave.Modules...)
 	master.MaxPower += slave.MaxPower
 	master.Power += slave.Power
@@ -495,26 +488,22 @@ func (r *Repl) dockCommand(masterID, slaveID string) {
 	master.IsAssembly = true
 	master.DockedWith = append(master.DockedWith, slave.ID)
 	master.CargoBays = append(master.CargoBays, slave.CargoBays...)
-
-	// 合并固件列表（如果从星有固件，也合并）
 	master.Firmware = append(master.Firmware, slave.Firmware...)
-	// 去重（可选）
 
-	// 标记从星为已对接
 	slave.IsActive = false
 	slave.OrbitBodyID = "docked"
 
-	fmt.Printf("✅ 对接成功！%s 和 %s 合并为组合体 %s\n", master.Name, slave.Name, master.Name)
-	fmt.Printf("   总电力: %.0f / %.0f Wh\n", master.Power, master.MaxPower)
-	fmt.Printf("   总数据率: %.0f kbps\n", master.DataRate)
-	fmt.Printf("   剩余 Δv: %.0f m/s\n", master.DeltaVRemaining)
-	fmt.Printf("   对接列表: %s\n", strings.Join(master.DockedWith, ", "))
+	fmt.Printf(i18n.T("orbit_dock_success"), master.Name, slave.Name, master.Name)
+	fmt.Printf(i18n.T("orbit_dock_power"), master.Power, master.MaxPower)
+	fmt.Printf(i18n.T("orbit_dock_data_rate"), master.DataRate)
+	fmt.Printf(i18n.T("orbit_dock_dv"), master.DeltaVRemaining)
+	fmt.Printf(i18n.T("orbit_dock_list"), strings.Join(master.DockedWith, ", "))
 	if len(slave.CargoBays) > 0 {
-		fmt.Printf("   货舱已合并: %d 个货舱\n", len(slave.CargoBays))
+		fmt.Printf(i18n.T("orbit_dock_cargo"), len(slave.CargoBays))
 	}
-	fmt.Printf("   控制中心: %s\n", map[bool]string{true: "✅ 是", false: "❌ 否"}[master.HasControlCenter])
+	fmt.Printf(i18n.T("orbit_dock_control_status"), map[bool]string{true: i18n.T("sat_yes"), false: i18n.T("sat_no")}[master.HasControlCenter])
 	if len(master.Firmware) > 0 {
-		fmt.Printf("   已连接固件: %d 个\n", len(master.Firmware))
+		fmt.Printf(i18n.T("orbit_dock_firmware_count"), len(master.Firmware))
 	}
 }
 
@@ -528,56 +517,56 @@ func (r *Repl) travelCommand(vesselID, targetID string) {
 		}
 	}
 	if v == nil {
-		fmt.Printf("错误: 未找到航天器 '%s'\n", vesselID)
+		fmt.Printf(i18n.T("error_vessel_not_found"), vesselID)
 		return
 	}
 	if !v.IsActive {
-		fmt.Println("航天器已失效")
+		fmt.Println(i18n.T("error_vessel_inactive"))
 		return
 	}
 
 	state, err := r.getFlybyState(v)
 	if err != nil {
-		fmt.Printf("错误: %v\n", err)
+		fmt.Printf(i18n.T("error_flyby_state"), err)
 		return
 	}
 	if v.OrbitBodyID != "deep_space" {
-		fmt.Printf("错误: 航天器当前不在深空，位于 %s，请先执行 'orbit escape'\n", v.OrbitBodyID)
+		fmt.Printf(i18n.T("orbit_travel_not_deep_space"), v.OrbitBodyID)
 		return
 	}
 	if v.DepartureBody == "" {
-		fmt.Println("错误: 缺少出发天体信息，无法计算转移")
+		fmt.Println(i18n.T("orbit_travel_no_departure"))
 		return
 	}
 
 	target, ok := r.game.StarSystem.CelestialBodies[targetID]
 	if !ok {
-		fmt.Printf("错误: 未找到目标天体 '%s'\n", targetID)
+		fmt.Printf(i18n.T("error_body_not_found"), targetID)
 		return
 	}
 	fromBody, ok := r.game.StarSystem.CelestialBodies[v.DepartureBody]
 	if !ok {
-		fmt.Println("错误: 出发天体数据缺失")
+		fmt.Println(i18n.T("orbit_travel_no_departure"))
 		return
 	}
 
 	newState, dv, flightDays, err := engine.ApplyHohmannTransfer(state, target, r.game.CurrentTime)
 	if err != nil {
-		fmt.Printf("转移计算失败: %v\n", err)
+		fmt.Printf(i18n.T("orbit_travel_calc_failed"), err)
 		return
 	}
 
 	windowStart, windowEnd, waitDays, _, err := engine.NextWindow(fromBody, target, r.game.CurrentTime, r.cfg.Physics.WindowSearchDays)
 	if err != nil {
-		fmt.Printf("计算窗口失败: %v\n", err)
+		fmt.Printf(i18n.T("error_window_calc_failed"), err)
 		return
 	}
 	current := r.game.CurrentTime
 	if current.Before(windowStart) || current.After(windowEnd) {
-		fmt.Printf("\n❌ 当前时间不在发射窗口内！\n")
-		fmt.Printf("下一个窗口开始: %s\n", windowStart.Format("2006-01-02"))
-		fmt.Printf("需要等待: %d 天\n", waitDays)
-		fmt.Printf("使用 'tick %d' 推进时间到窗口期。\n", waitDays)
+		fmt.Printf(i18n.T("orbit_travel_window_not_in"))
+		fmt.Printf(i18n.T("orbit_travel_window_next"), windowStart.Format("2006-01-02"))
+		fmt.Printf(i18n.T("orbit_travel_window_wait"), waitDays)
+		fmt.Printf(i18n.T("orbit_travel_window_tick"), waitDays)
 		return
 	}
 
@@ -586,22 +575,22 @@ func (r *Repl) travelCommand(vesselID, targetID string) {
 	arrivalTime := r.game.CurrentTime.AddDate(0, 0, int(flightDays)+1)
 	v.ArrivalTime = arrivalTime
 
-	fmt.Printf("🚀 星际航行成功！\n")
-	fmt.Printf("   航天器 %s 已到达 %s 高轨道 (高度 %.0f km)\n", v.Name, target.Name, v.OrbitAltitude)
-	fmt.Printf("   消耗 Δv: %.0f m/s, 剩余: %.0f m/s\n", dv, v.DeltaVRemaining)
-	fmt.Printf("   预计到达时间: %s (飞行约 %.0f 天)\n", arrivalTime.Format("2006-01-02"), flightDays)
+	fmt.Printf(i18n.T("orbit_travel_success"))
+	fmt.Printf(i18n.T("orbit_travel_arrived"), v.Name, target.Name, v.OrbitAltitude)
+	fmt.Printf(i18n.T("orbit_travel_dv"), dv, v.DeltaVRemaining)
+	fmt.Printf(i18n.T("orbit_travel_arrival_time"), arrivalTime.Format("2006-01-02"), flightDays)
 }
 
 // ==================== orbit release 命令 ====================
 func (r *Repl) releaseCommand(vesselID string, bayIndexStr string, itemIndexStr string) {
 	bayIndex, err := strconv.Atoi(bayIndexStr)
 	if err != nil || bayIndex < 1 {
-		fmt.Println("错误: 无效的货舱序号，请输入正整数")
+		fmt.Println(i18n.T("orbit_release_invalid_bay"))
 		return
 	}
 	itemIndex, err := strconv.Atoi(itemIndexStr)
 	if err != nil || itemIndex < 1 {
-		fmt.Println("错误: 无效的货物索引，请输入正整数")
+		fmt.Println(i18n.T("orbit_release_invalid_item"))
 		return
 	}
 
@@ -613,34 +602,34 @@ func (r *Repl) releaseCommand(vesselID string, bayIndexStr string, itemIndexStr 
 		}
 	}
 	if v == nil {
-		fmt.Printf("错误: 未找到航天器 '%s'\n", vesselID)
+		fmt.Printf(i18n.T("error_vessel_not_found"), vesselID)
 		return
 	}
 	if !v.IsActive {
-		fmt.Println("错误: 航天器已失效")
+		fmt.Println(i18n.T("error_vessel_inactive"))
 		return
 	}
 
 	bay, _ := r.getCargoBayByIndex(v, bayIndex)
 	if bay == nil {
-		fmt.Printf("错误: 未找到货舱 %d\n", bayIndex)
-		fmt.Println("可用货舱:")
+		fmt.Printf(i18n.T("orbit_release_bay_not_found"), bayIndex)
+		fmt.Println(i18n.T("orbit_release_available_bays"))
 		for _, b := range v.CargoBays {
-			fmt.Printf("  货舱 %d: %d 件货物\n", b.Index, len(b.Loaded))
+			fmt.Printf(i18n.T("orbit_release_bay_item"), b.Index, len(b.Loaded))
 		}
 		return
 	}
 	if len(bay.Loaded) == 0 {
-		fmt.Printf("货舱 %d 已空\n", bayIndex)
+		fmt.Printf(i18n.T("orbit_release_bay_empty"), bayIndex)
 		return
 	}
 
 	item, itemIdx := r.getCargoItemByIndex(bay, itemIndex)
 	if item == nil {
-		fmt.Printf("错误: 未找到货物 %d\n", itemIndex)
-		fmt.Printf("货舱 %d 中的货物:\n", bayIndex)
+		fmt.Printf(i18n.T("orbit_release_item_not_found"), itemIndex)
+		fmt.Printf(i18n.T("orbit_release_bay_contents"), bayIndex)
 		for i, cargo := range bay.Loaded {
-			fmt.Printf("  [%d] %s (%s)\n", i+1, r.getCargoName(cargo), cargo.Type)
+			fmt.Printf(i18n.T("orbit_release_bay_content_item"), i+1, r.getCargoName(cargo), cargo.Type)
 		}
 		return
 	}
@@ -717,27 +706,27 @@ func (r *Repl) releaseCommand(vesselID string, bayIndexStr string, itemIndexStr 
 			})
 		}
 	default:
-		fmt.Printf("警告: 未知货物类型 '%s'，释放后可能无法正常使用\n", item.Type)
+		fmt.Printf(i18n.T("orbit_release_unknown_type"), item.Type)
 	}
 
 	if r.hasControlChip(&newVessel) {
 		newVessel.HasControlCenter = true
-		fmt.Printf("🔌 释放的货物包含航电，已激活控制中心\n")
+		fmt.Println(i18n.T("orbit_release_control_activated"))
 	}
 
 	r.game.Vessels = append(r.game.Vessels, newVessel)
 
-	fmt.Printf("✅ 货物释放成功！\n")
-	fmt.Printf("   货物: %s\n", cargoName)
-	fmt.Printf("   质量: %.0f kg\n", cargoMass)
-	fmt.Printf("   新实体 ID: %s\n", newVesselID)
-	fmt.Printf("   位置: %s 轨道 (高度 %.0f km)\n",
+	fmt.Printf(i18n.T("orbit_release_success"))
+	fmt.Printf(i18n.T("orbit_release_item"), cargoName)
+	fmt.Printf(i18n.T("orbit_release_mass"), cargoMass)
+	fmt.Printf(i18n.T("orbit_release_new_id"), newVesselID)
+	fmt.Printf(i18n.T("orbit_release_position"),
 		r.game.StarSystem.CelestialBodies[v.OrbitBodyID].Name, v.OrbitAltitude)
-	fmt.Println("   可使用 'sat list' 查看新实体。")
-	fmt.Println("\n💡 提示: 释放后的货物可使用 'sat list' 查看。")
+	fmt.Println(i18n.T("orbit_release_hint"))
+	fmt.Println(i18n.T("orbit_release_tip"))
 
 	if len(bay.Loaded) == 0 {
-		fmt.Printf("货舱 %d 已空。\n", bayIndex)
+		fmt.Printf(i18n.T("orbit_release_bay_empty"), bayIndex)
 	}
 }
 
@@ -753,35 +742,35 @@ func (r *Repl) flybyPlan(vesselID string) {
 		}
 	}
 	if v == nil {
-		fmt.Printf("错误: 未找到航天器 '%s'\n", vesselID)
+		fmt.Printf(i18n.T("error_vessel_not_found"), vesselID)
 		return
 	}
 	if !v.IsActive {
-		fmt.Println("航天器已失效")
+		fmt.Println(i18n.T("error_vessel_inactive"))
 		return
 	}
 
 	state, err := r.getFlybyState(v)
 	if err != nil {
-		fmt.Printf("错误: %v\n", err)
+		fmt.Printf(i18n.T("error_flyby_state"), err)
 		return
 	}
 	if state.CurrentBodyID == "deep_space" {
-		fmt.Println("航天器在深空，无法进行引力辅助（需要位于行星附近）")
+		fmt.Println(i18n.T("orbit_flyby_deep_space"))
 		return
 	}
 
 	bestPlanet, bestDV, bestState, err := engine.PlanNextFlyby(state, r.game.StarSystem, r.game.CurrentTime, 0)
 	if err != nil {
-		fmt.Printf("规划失败: %v\n", err)
+		fmt.Printf(i18n.T("orbit_flyby_plan_failed"), err)
 		return
 	}
 	planet := r.game.StarSystem.CelestialBodies[bestPlanet]
-	fmt.Printf("推荐飞掠目标: %s\n", planet.Name)
-	fmt.Printf("预计消耗 Δv: %.0f m/s\n", bestDV)
-	fmt.Printf("飞掠后剩余 Δv: %.0f m/s\n", bestState.DeltaVRemaining)
-	fmt.Printf("飞掠后位置: %s 附近\n", planet.Name)
-	fmt.Println("\n使用 'flyby execute <航天器ID> <目标> [近心点高度]' 执行飞掠")
+	fmt.Printf(i18n.T("orbit_flyby_plan"), planet.Name)
+	fmt.Printf(i18n.T("orbit_flyby_plan_dv"), bestDV)
+	fmt.Printf(i18n.T("orbit_flyby_plan_remaining_dv"), bestState.DeltaVRemaining)
+	fmt.Printf(i18n.T("orbit_flyby_plan_position"), planet.Name)
+	fmt.Println(i18n.T("orbit_flyby_plan_hint"))
 }
 
 // flybyExecute 执行一次引力辅助
@@ -794,21 +783,21 @@ func (r *Repl) flybyExecute(vesselID, planetID string, periapsisStr string) {
 		}
 	}
 	if v == nil {
-		fmt.Printf("错误: 未找到航天器 '%s'\n", vesselID)
+		fmt.Printf(i18n.T("error_vessel_not_found"), vesselID)
 		return
 	}
 	if !v.IsActive {
-		fmt.Println("航天器已失效")
+		fmt.Println(i18n.T("error_vessel_inactive"))
 		return
 	}
 
 	planet, ok := r.game.StarSystem.CelestialBodies[planetID]
 	if !ok {
-		fmt.Printf("错误: 未找到行星 '%s'\n", planetID)
+		fmt.Printf(i18n.T("error_body_not_found"), planetID)
 		return
 	}
 	if planetID == v.OrbitBodyID {
-		fmt.Println("错误: 不能对当前所在天体进行引力辅助")
+		fmt.Println(i18n.T("orbit_flyby_same_body"))
 		return
 	}
 
@@ -818,101 +807,94 @@ func (r *Repl) flybyExecute(vesselID, planetID string, periapsisStr string) {
 		if err == nil && p > 0 {
 			periapsis = p
 			if periapsis < planet.Radius {
-				fmt.Printf("警告: 近心点高度低于行星半径，自动调整为 %.0f km\n", planet.Radius+100)
+				fmt.Printf(i18n.T("orbit_flyby_periapsis_warning"), planet.Radius+100)
 				periapsis = planet.Radius + 100
 			}
 		} else {
-			fmt.Println("警告: 无效的近心点高度，使用默认值")
+			fmt.Println(i18n.T("orbit_flyby_periapsis_invalid"))
 		}
 	}
 
 	state, err := r.getFlybyState(v)
 	if err != nil {
-		fmt.Printf("错误: %v\n", err)
+		fmt.Printf(i18n.T("error_flyby_state"), err)
 		return
 	}
 
 	newState, dv, err := engine.ComputeFlybyState(state, planet, periapsis, r.game.CurrentTime)
 	if err != nil {
-		fmt.Printf("飞掠计算失败: %v\n", err)
+		fmt.Printf(i18n.T("orbit_flyby_execute_failed"), err)
 		return
 	}
 
 	r.updateVesselState(v, newState)
 	v.FlybyHistory = append(v.FlybyHistory, planetID)
 
-	fmt.Printf("✅ 引力辅助成功！\n")
-	fmt.Printf("   行星: %s\n", planet.Name)
-	fmt.Printf("   近心点高度: %.0f km\n", periapsis)
-	fmt.Printf("   消耗 Δv: %.0f m/s\n", dv)
-	fmt.Printf("   剩余 Δv: %.0f m/s\n", v.DeltaVRemaining)
-	fmt.Printf("   新日心速度: (%.2f, %.2f) km/s\n", newState.Vel[0], newState.Vel[1])
-	fmt.Printf("   当前位置: %s 附近\n", planet.Name)
-	fmt.Println("\n💡 提示: 可以继续使用 'flyby plan' 规划下一次飞掠，或使用 'travel' 前往目标。")
+	fmt.Printf(i18n.T("orbit_flyby_execute_success"))
+	fmt.Printf(i18n.T("orbit_flyby_execute_planet"), planet.Name)
+	fmt.Printf(i18n.T("orbit_flyby_execute_periapsis"), periapsis)
+	fmt.Printf(i18n.T("orbit_flyby_execute_dv"), dv)
+	fmt.Printf(i18n.T("orbit_flyby_execute_remaining_dv"), v.DeltaVRemaining)
+	fmt.Printf(i18n.T("orbit_flyby_execute_new_vel"), newState.Vel[0], newState.Vel[1])
+	fmt.Printf(i18n.T("orbit_flyby_execute_position"), planet.Name)
+	fmt.Println(i18n.T("orbit_flyby_execute_hint"))
 }
 
 // ==================== orbit 命令分发 ====================
+
 func (r *Repl) handleOrbitCommand(subCmd string, args []string) {
 	switch subCmd {
 	case "info":
 		if len(args) < 1 {
-			fmt.Println("用法: orbit info <航天器ID>")
+			fmt.Println(i18n.T("orbit_info_usage"))
 			return
 		}
 		r.orbitCommand(args[0])
 	case "transfer":
 		if len(args) < 2 {
-			fmt.Println("用法: orbit transfer <航天器ID> <目标层索引或名称>")
-			fmt.Println("  例如: orbit transfer sat_1 0 (转移到最低层)")
-			fmt.Println("  例如: orbit transfer sat_1 高 (转移到最高层)")
+			fmt.Println(i18n.T("orbit_transfer_usage"))
 			return
 		}
 		r.transferCommand(args[0], args[1])
 	case "escape":
 		if len(args) < 1 {
-			fmt.Println("用法: orbit escape <航天器ID>")
+			fmt.Println(i18n.T("orbit_escape_usage"))
 			return
 		}
 		r.escapeCommand(args[0])
 	case "dock":
 		if len(args) < 2 {
-			fmt.Println("用法: orbit dock <主航天器ID> <从航天器ID>")
-			fmt.Println("  将两个航天器在轨道上对接，合并为组合体")
+			fmt.Println(i18n.T("orbit_dock_usage"))
 			return
 		}
 		r.dockCommand(args[0], args[1])
 	case "travel":
 		if len(args) < 2 {
-			fmt.Println("用法: orbit travel <航天器ID> <目标天体ID>")
-			fmt.Println("  从深空飞向目标天体（使用霍曼转移）")
+			fmt.Println(i18n.T("orbit_travel_usage"))
 			return
 		}
 		r.travelCommand(args[0], args[1])
 	case "release":
 		if len(args) < 3 {
-			fmt.Println("用法: orbit release <航天器/组合体ID> <货舱序号> <货物索引>")
-			fmt.Println("  从货舱释放货物，生成新的在轨实体")
-			fmt.Println("  货物索引可通过 'orbit info <航天器ID>' 查看")
+			fmt.Println(i18n.T("orbit_release_usage"))
 			return
 		}
 		r.releaseCommand(args[0], args[1], args[2])
 	case "flyby":
 		if len(args) < 2 {
-			fmt.Println("用法: orbit flyby <子命令> [参数]")
-			fmt.Println("  子命令: plan <航天器ID> - 推荐下一个最佳飞掠目标")
-			fmt.Println("          execute <航天器ID> <行星ID> [近心点高度km] - 执行飞掠")
+			fmt.Println(i18n.T("orbit_flyby_usage"))
 			return
 		}
 		switch args[0] {
 		case "plan":
 			if len(args) < 2 {
-				fmt.Println("用法: orbit flyby plan <航天器ID>")
+				fmt.Println(i18n.T("orbit_flyby_plan_usage"))
 				return
 			}
 			r.flybyPlan(args[1])
 		case "execute":
 			if len(args) < 3 {
-				fmt.Println("用法: orbit flyby execute <航天器ID> <行星ID> [近心点高度km]")
+				fmt.Println(i18n.T("orbit_flyby_execute_usage"))
 				return
 			}
 			alt := ""
@@ -921,17 +903,18 @@ func (r *Repl) handleOrbitCommand(subCmd string, args []string) {
 			}
 			r.flybyExecute(args[1], args[2], alt)
 		default:
-			fmt.Printf("未知 flyby 子命令 '%s'\n", args[0])
+			fmt.Printf(i18n.T("orbit_flyby_unknown"), args[0])
 		}
 	default:
-		fmt.Println("未知轨道子命令")
-		fmt.Println("  orbit info <航天器ID>     - 显示轨道信息（含日心状态）")
-		fmt.Println("  orbit transfer <航天器ID> <目标层> - 变轨到指定轨道层")
-		fmt.Println("  orbit escape <航天器ID>   - 弹射离开当前天体")
-		fmt.Println("  orbit dock <主航天器ID> <从航天器ID> - 在轨对接（自动识别固件）")
-		fmt.Println("  orbit travel <航天器ID> <目标天体ID> - 星际航行（霍曼转移）")
-		fmt.Println("  orbit release <航天器ID> <货舱序号> <货物索引> - 从货舱释放货物")
-		fmt.Println("  orbit flyby plan <航天器ID>          - 推荐下一个飞掠目标")
-		fmt.Println("  orbit flyby execute <航天器ID> <行星ID> [高度] - 执行飞掠")
+		fmt.Println(i18n.T("orbit_unknown_command"))
+		fmt.Println(i18n.T("orbit_help"))
+		fmt.Println(i18n.T("orbit_help_info"))
+		fmt.Println(i18n.T("orbit_help_transfer"))
+		fmt.Println(i18n.T("orbit_help_escape"))
+		fmt.Println(i18n.T("orbit_help_dock"))
+		fmt.Println(i18n.T("orbit_help_travel"))
+		fmt.Println(i18n.T("orbit_help_release"))
+		fmt.Println(i18n.T("orbit_help_flyby_plan"))
+		fmt.Println(i18n.T("orbit_help_flyby_execute"))
 	}
 }

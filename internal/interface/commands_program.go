@@ -7,6 +7,7 @@ import (
 
 	"astrolex/internal/domain"
 	"astrolex/internal/engine"
+	"astrolex/internal/i18n"
 )
 
 // ==================== 程序管理命令 ====================
@@ -28,7 +29,7 @@ func (r *Repl) programList() {
 			progs = append(progs, progInfo{
 				ID:         p.ID,
 				Name:       p.Name,
-				Status:     "待上传",
+				Status:     i18n.T("program_status_pending"),
 				VesselName: "-",
 				VesselID:   "-",
 				Uploaded:   time.Time{},
@@ -42,9 +43,9 @@ func (r *Repl) programList() {
 			continue
 		}
 		for _, p := range v.ECCLPrograms {
-			status := "已停止"
+			status := i18n.T("program_status_stopped")
 			if p.IsRunning {
-				status = "运行中"
+				status = i18n.T("program_status_running")
 			}
 			progs = append(progs, progInfo{
 				ID:         p.ID,
@@ -58,22 +59,23 @@ func (r *Repl) programList() {
 	}
 
 	if len(progs) == 0 {
-		fmt.Println("没有找到任何 ECCL 程序。请使用 'program edit <名称>' 创建程序。")
+		fmt.Println(i18n.T("program_list_none"))
 		return
 	}
-	fmt.Println("ECCL 程序列表:")
+	fmt.Println(i18n.T("program_list_title"))
 	for _, p := range progs {
-		fmt.Printf("  %s: %s (状态: %s", p.ID, p.Name, p.Status)
-		if p.Status != "待上传" {
-			fmt.Printf(", 航天器: %s, 上传: %s", p.VesselName, p.Uploaded.Format("2006-01-02 15:04"))
+		if p.Status == i18n.T("program_status_pending") {
+			fmt.Printf(i18n.T("program_list_pending"), p.ID, p.Name)
+		} else {
+			fmt.Printf(i18n.T("program_list_item"),
+				p.ID, p.Name, p.Status, p.VesselName, p.Uploaded.Format("2006-01-02 15:04"))
 		}
-		fmt.Println(")")
 	}
 }
 
 func (r *Repl) programEdit(progName string) {
 	if progName == "" {
-		fmt.Println("用法: program edit <程序名称>")
+		fmt.Println(i18n.T("program_edit_usage"))
 		return
 	}
 
@@ -97,13 +99,13 @@ func (r *Repl) programEdit(progName string) {
 
 	var code string
 	if existingProg != nil {
-		fmt.Printf("编辑程序 '%s' (航天器: %s)\n", progName, existingVessel.Name)
-		fmt.Printf("当前代码:\n%s\n", existingProg.Code)
-		fmt.Println("请输入新代码（输入 'EOF' 单独一行结束）：")
+		fmt.Printf(i18n.T("program_edit_edit"), progName, existingVessel.Name)
+		fmt.Printf(i18n.T("program_edit_current_code"), existingProg.Code)
+		fmt.Println(i18n.T("program_edit_enter_code"))
 	} else {
-		fmt.Printf("创建新程序 '%s'\n", progName)
-		fmt.Println("请输入 ECCL 代码（输入 'EOF' 单独一行结束）：")
-		fmt.Println("示例:\n  :START\n  SET COUNTER 0\n  :LOOP\n  LOG \"Hello from ECCL\"\n  WAIT 10\n  SET COUNTER $COUNTER + 1\n  IF $COUNTER > 5 GOTO :END\n  GOTO :LOOP\n  :END\n  LOG \"程序结束\"")
+		fmt.Printf(i18n.T("program_edit_create"), progName)
+		fmt.Println(i18n.T("program_edit_enter_code"))
+		fmt.Println(i18n.T("program_edit_example"))
 	}
 
 	var lines []string
@@ -119,7 +121,7 @@ func (r *Repl) programEdit(progName string) {
 	code = strings.Join(lines, "\n")
 
 	if len(strings.TrimSpace(code)) == 0 {
-		fmt.Println("程序代码为空，取消操作。")
+		fmt.Println(i18n.T("program_edit_empty"))
 		return
 	}
 
@@ -134,7 +136,7 @@ func (r *Repl) programEdit(progName string) {
 	}
 
 	if err := engine.LoadProgram(prog); err != nil {
-		fmt.Printf("程序解析错误: %v\n", err)
+		fmt.Printf(i18n.T("program_edit_parse_error"), err)
 		return
 	}
 
@@ -143,21 +145,21 @@ func (r *Repl) programEdit(progName string) {
 		existingProg.Registers = prog.Registers
 		existingProg.Labels = prog.Labels
 		existingProg.UploadedAt = time.Now()
-		fmt.Printf("程序 '%s' 已更新\n", progName)
+		fmt.Printf(i18n.T("program_edit_updated"), progName)
 	} else {
 		if r.pendingPrograms == nil {
 			r.pendingPrograms = make(map[string]*domain.ECCLProgram)
 		}
 		prog.ID = fmt.Sprintf("prog_%d", len(r.pendingPrograms)+1)
 		r.pendingPrograms[prog.ID] = prog
-		fmt.Printf("程序 '%s' 已创建，ID: %s\n", progName, prog.ID)
-		fmt.Println("使用 'program upload <程序ID> <航天器ID>' 上传到航天器")
+		fmt.Printf(i18n.T("program_edit_created"), progName, prog.ID)
+		fmt.Println(i18n.T("program_edit_upload_hint"))
 	}
 }
 
 func (r *Repl) programUpload(progID, vesselID string) {
 	if progID == "" || vesselID == "" {
-		fmt.Println("用法: program upload <程序ID> <航天器ID>")
+		fmt.Println(i18n.T("program_upload_usage"))
 		return
 	}
 
@@ -174,12 +176,12 @@ func (r *Repl) programUpload(progID, vesselID string) {
 			}
 			for i := range v.ECCLPrograms {
 				if v.ECCLPrograms[i].ID == progID {
-					fmt.Printf("程序 '%s' 已存在于航天器 '%s' 上\n", prog.Name, v.Name)
+					fmt.Printf(i18n.T("program_upload_already_exists"), prog.Name, v.Name)
 					return
 				}
 			}
 		}
-		fmt.Printf("错误: 未找到程序 ID '%s'\n", progID)
+		fmt.Printf(i18n.T("program_upload_not_found"), progID)
 		return
 	}
 
@@ -191,13 +193,12 @@ func (r *Repl) programUpload(progID, vesselID string) {
 		}
 	}
 	if vessel == nil {
-		fmt.Printf("错误: 未找到航天器 ID '%s'\n", vesselID)
+		fmt.Printf(i18n.T("program_upload_vessel_not_found"), vesselID)
 		return
 	}
 
 	if !vessel.HasControlCenter {
-		fmt.Println("⚠️ 警告: 航天器没有控制中心，程序可以上传但无法运行")
-		fmt.Println("   请确保航天器包含航电 (av-1) 才能执行程序")
+		fmt.Println(i18n.T("program_upload_warning_no_control"))
 	}
 
 	prog.UploadedAt = time.Now()
@@ -205,13 +206,13 @@ func (r *Repl) programUpload(progID, vesselID string) {
 	vessel.ECCLPrograms = append(vessel.ECCLPrograms, *prog)
 	delete(r.pendingPrograms, progID)
 
-	fmt.Printf("程序 '%s' 已上传到航天器 '%s'\n", prog.Name, vessel.Name)
-	fmt.Println("使用 'program run <程序ID> <航天器ID>' 执行程序")
+	fmt.Printf(i18n.T("program_upload_success"), prog.Name, vessel.Name)
+	fmt.Println(i18n.T("program_upload_run_hint"))
 }
 
 func (r *Repl) programRun(progID, vesselID string) {
 	if progID == "" || vesselID == "" {
-		fmt.Println("用法: program run <程序ID> <航天器ID>")
+		fmt.Println(i18n.T("program_run_usage"))
 		return
 	}
 
@@ -223,7 +224,7 @@ func (r *Repl) programRun(progID, vesselID string) {
 		}
 	}
 	if vessel == nil {
-		fmt.Printf("错误: 未找到航天器 ID '%s'\n", vesselID)
+		fmt.Printf(i18n.T("program_run_vessel_not_found"), vesselID)
 		return
 	}
 
@@ -235,18 +236,17 @@ func (r *Repl) programRun(progID, vesselID string) {
 		}
 	}
 	if prog == nil {
-		fmt.Printf("错误: 航天器上未找到程序 ID '%s'\n", progID)
+		fmt.Printf(i18n.T("program_run_not_found"), progID)
 		return
 	}
 
 	if prog.IsRunning {
-		fmt.Printf("程序 '%s' 已在运行中\n", prog.Name)
+		fmt.Printf(i18n.T("program_run_already_running"), prog.Name)
 		return
 	}
 
 	if !vessel.HasControlCenter {
-		fmt.Println("❌ 错误: 航天器没有控制中心，无法执行程序")
-		fmt.Println("   请确保航天器包含航电 (av-1)")
+		fmt.Println(i18n.T("program_run_no_control"))
 		return
 	}
 
@@ -255,13 +255,13 @@ func (r *Repl) programRun(progID, vesselID string) {
 	prog.IsRunning = true
 	prog.LastExecuted = time.Now()
 
-	fmt.Printf("程序 '%s' 开始在航天器 '%s' 上执行...\n", prog.Name, vessel.Name)
-	fmt.Println("(使用 'program stop <程序ID> <航天器ID>' 停止执行)")
+	fmt.Printf(i18n.T("program_run_start"), prog.Name, vessel.Name)
+	fmt.Println(i18n.T("program_run_stop_hint"))
 
 	go func() {
 		err := vm.Run()
 		if err != nil {
-			fmt.Printf("程序执行错误: %v\n", err)
+			fmt.Printf(i18n.T("program_run_error"), err)
 		}
 		prog.IsRunning = false
 		if len(vm.LastLog) > 0 {
@@ -270,13 +270,13 @@ func (r *Repl) programRun(progID, vesselID string) {
 				prog.Logs = prog.Logs[len(prog.Logs)-100:]
 			}
 		}
-		fmt.Printf("程序 '%s' 执行完成\n", prog.Name)
+		fmt.Printf(i18n.T("program_run_complete"), prog.Name)
 	}()
 }
 
 func (r *Repl) programStop(progID, vesselID string) {
 	if progID == "" || vesselID == "" {
-		fmt.Println("用法: program stop <程序ID> <航天器ID>")
+		fmt.Println(i18n.T("program_stop_usage"))
 		return
 	}
 
@@ -288,7 +288,7 @@ func (r *Repl) programStop(progID, vesselID string) {
 		}
 	}
 	if vessel == nil {
-		fmt.Printf("错误: 未找到航天器 ID '%s'\n", vesselID)
+		fmt.Printf(i18n.T("program_stop_vessel_not_found"), vesselID)
 		return
 	}
 
@@ -300,22 +300,22 @@ func (r *Repl) programStop(progID, vesselID string) {
 		}
 	}
 	if prog == nil {
-		fmt.Printf("错误: 航天器上未找到程序 ID '%s'\n", progID)
+		fmt.Printf(i18n.T("program_stop_not_found"), progID)
 		return
 	}
 
 	if !prog.IsRunning {
-		fmt.Printf("程序 '%s' 未在运行\n", prog.Name)
+		fmt.Printf(i18n.T("program_stop_not_running"), prog.Name)
 		return
 	}
 
 	prog.IsRunning = false
-	fmt.Printf("程序 '%s' 已停止\n", prog.Name)
+	fmt.Printf(i18n.T("program_stop_success"), prog.Name)
 }
 
 func (r *Repl) programLogs(progID, vesselID string) {
 	if progID == "" || vesselID == "" {
-		fmt.Println("用法: program logs <程序ID> <航天器ID>")
+		fmt.Println(i18n.T("program_logs_usage"))
 		return
 	}
 
@@ -327,7 +327,7 @@ func (r *Repl) programLogs(progID, vesselID string) {
 		}
 	}
 	if vessel == nil {
-		fmt.Printf("错误: 未找到航天器 ID '%s'\n", vesselID)
+		fmt.Printf(i18n.T("program_logs_vessel_not_found"), vesselID)
 		return
 	}
 
@@ -339,15 +339,15 @@ func (r *Repl) programLogs(progID, vesselID string) {
 		}
 	}
 	if prog == nil {
-		fmt.Printf("错误: 航天器上未找到程序 ID '%s'\n", progID)
+		fmt.Printf(i18n.T("program_logs_not_found"), progID)
 		return
 	}
 
 	if len(prog.Logs) == 0 {
-		fmt.Printf("程序 '%s' 没有日志\n", prog.Name)
+		fmt.Printf(i18n.T("program_logs_no_logs"), prog.Name)
 		return
 	}
-	fmt.Printf("程序 '%s' 日志 (最新 20 条):\n", prog.Name)
+	fmt.Printf(i18n.T("program_logs_title"), prog.Name)
 	start := 0
 	if len(prog.Logs) > 20 {
 		start = len(prog.Logs) - 20
@@ -359,7 +359,7 @@ func (r *Repl) programLogs(progID, vesselID string) {
 
 func (r *Repl) programStatus(progID, vesselID string) {
 	if progID == "" || vesselID == "" {
-		fmt.Println("用法: program status <程序ID> <航天器ID>")
+		fmt.Println(i18n.T("program_status_usage"))
 		return
 	}
 
@@ -371,7 +371,7 @@ func (r *Repl) programStatus(progID, vesselID string) {
 		}
 	}
 	if vessel == nil {
-		fmt.Printf("错误: 未找到航天器 ID '%s'\n", vesselID)
+		fmt.Printf(i18n.T("program_status_vessel_not_found"), vesselID)
 		return
 	}
 
@@ -383,32 +383,32 @@ func (r *Repl) programStatus(progID, vesselID string) {
 		}
 	}
 	if prog == nil {
-		fmt.Printf("错误: 航天器上未找到程序 ID '%s'\n", progID)
+		fmt.Printf(i18n.T("program_status_not_found"), progID)
 		return
 	}
 
-	status := "停止"
+	status := i18n.T("program_status_stopped")
 	if prog.IsRunning {
-		status = "运行中"
+		status = i18n.T("program_status_running")
 	}
-	fmt.Printf("=== 程序 '%s' 状态 ===\n", prog.Name)
-	fmt.Printf("ID: %s\n", prog.ID)
-	fmt.Printf("状态: %s\n", status)
-	fmt.Printf("航天器: %s (%s)\n", vessel.Name, vessel.ID)
-	fmt.Printf("上传时间: %s\n", prog.UploadedAt.Format("2006-01-02 15:04:05"))
+	fmt.Printf(i18n.T("program_status_title"), prog.Name)
+	fmt.Printf(i18n.T("program_status_id"), prog.ID)
+	fmt.Printf(i18n.T("program_status_state"), status)
+	fmt.Printf(i18n.T("program_status_vessel"), vessel.Name, vessel.ID)
+	fmt.Printf(i18n.T("program_status_uploaded"), prog.UploadedAt.Format("2006-01-02 15:04:05"))
 	if !prog.LastExecuted.IsZero() {
-		fmt.Printf("最后执行: %s\n", prog.LastExecuted.Format("2006-01-02 15:04:05"))
+		fmt.Printf(i18n.T("program_status_last_executed"), prog.LastExecuted.Format("2006-01-02 15:04:05"))
 	}
-	fmt.Printf("寄存器:\n")
+	fmt.Println(i18n.T("program_status_registers"))
 	for k, v := range prog.Registers {
-		fmt.Printf("  $%s = %.2f\n", k, v)
+		fmt.Printf(i18n.T("program_status_register"), k, v)
 	}
-	fmt.Printf("标签数量: %d\n", len(prog.Labels))
-	fmt.Printf("日志条数: %d\n", len(prog.Logs))
+	fmt.Printf(i18n.T("program_status_labels"), len(prog.Labels))
+	fmt.Printf(i18n.T("program_status_logs"), len(prog.Logs))
 	if vessel.HasControlCenter {
-		fmt.Println("控制中心: ✅ 是")
+		fmt.Println(i18n.T("program_status_control_yes"))
 	} else {
-		fmt.Println("控制中心: ❌ 否 (程序可以上传但无法运行)")
+		fmt.Println(i18n.T("program_status_control_no"))
 	}
 }
 
@@ -418,48 +418,49 @@ func (r *Repl) handleProgramCommand(subCmd string, args []string) {
 		r.programList()
 	case "edit":
 		if len(args) < 1 {
-			fmt.Println("用法: program edit <程序名称>")
+			fmt.Println(i18n.T("program_edit_usage"))
 			return
 		}
 		r.programEdit(args[0])
 	case "upload":
 		if len(args) < 2 {
-			fmt.Println("用法: program upload <程序ID> <航天器ID>")
+			fmt.Println(i18n.T("program_upload_usage"))
 			return
 		}
 		r.programUpload(args[0], args[1])
 	case "run":
 		if len(args) < 2 {
-			fmt.Println("用法: program run <程序ID> <航天器ID>")
+			fmt.Println(i18n.T("program_run_usage"))
 			return
 		}
 		r.programRun(args[0], args[1])
 	case "stop":
 		if len(args) < 2 {
-			fmt.Println("用法: program stop <程序ID> <航天器ID>")
+			fmt.Println(i18n.T("program_stop_usage"))
 			return
 		}
 		r.programStop(args[0], args[1])
 	case "logs":
 		if len(args) < 2 {
-			fmt.Println("用法: program logs <程序ID> <航天器ID>")
+			fmt.Println(i18n.T("program_logs_usage"))
 			return
 		}
 		r.programLogs(args[0], args[1])
 	case "status":
 		if len(args) < 2 {
-			fmt.Println("用法: program status <程序ID> <航天器ID>")
+			fmt.Println(i18n.T("program_status_usage"))
 			return
 		}
 		r.programStatus(args[0], args[1])
 	default:
-		fmt.Println("未知 program 子命令")
-		fmt.Println("  program list                    - 列出所有程序（含待上传）")
-		fmt.Println("  program edit <名称>             - 创建或编辑程序")
-		fmt.Println("  program upload <程序ID> <航天器ID> - 上传程序到航天器")
-		fmt.Println("  program run <程序ID> <航天器ID>   - 在航天器上运行程序")
-		fmt.Println("  program stop <程序ID> <航天器ID>  - 停止运行中的程序")
-		fmt.Println("  program logs <程序ID> <航天器ID>  - 查看程序日志")
-		fmt.Println("  program status <程序ID> <航天器ID> - 查看程序状态")
+		fmt.Println(i18n.T("program_unknown_command"))
+		fmt.Println(i18n.T("program_help"))
+		fmt.Println(i18n.T("program_help_list"))
+		fmt.Println(i18n.T("program_help_edit"))
+		fmt.Println(i18n.T("program_help_upload"))
+		fmt.Println(i18n.T("program_help_run"))
+		fmt.Println(i18n.T("program_help_stop"))
+		fmt.Println(i18n.T("program_help_logs"))
+		fmt.Println(i18n.T("program_help_status"))
 	}
 }

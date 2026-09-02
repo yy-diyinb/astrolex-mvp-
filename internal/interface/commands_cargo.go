@@ -6,6 +6,7 @@ import (
 
 	"astrolex/internal/domain"
 	"astrolex/internal/engine"
+	"astrolex/internal/i18n"
 )
 
 // ==================== 货舱信息查询 ====================
@@ -21,23 +22,23 @@ func (r *Repl) cargoInfoCommand(designType string, designID string) {
 			}
 		}
 		if design == nil {
-			fmt.Printf("错误: 未找到火箭设计 '%s'\n", designID)
+			fmt.Printf(i18n.T("error_design_not_found"), designID)
 			return
 		}
 		if len(design.CargoBays) == 0 {
-			fmt.Printf("火箭设计 '%s' 没有装载任何货物。\n", design.Name)
+			fmt.Printf(i18n.T("cargo_info_no_cargo"), design.Name)
 			return
 		}
-		fmt.Printf("火箭设计 '%s' 货舱装载情况:\n", design.Name)
+		fmt.Printf(i18n.T("cargo_info_rocket_title"), design.Name)
 		for _, bay := range design.CargoBays {
-			fmt.Printf("  货舱 %d:\n", bay.Index)
+			fmt.Printf(i18n.T("cargo_info_cargo_bay"), bay.Index)
 			if len(bay.Loaded) == 0 {
-				fmt.Printf("    (空)\n")
+				fmt.Println(i18n.T("cargo_info_empty"))
 			} else {
 				for i, item := range bay.Loaded {
 					name := r.getCargoName(item)
 					mass := r.getCargoMass(item)
-					fmt.Printf("    [%d] %s (%s, 质量: %.0f kg)\n", i+1, name, item.Type, mass)
+					fmt.Printf(i18n.T("cargo_info_item"), i+1, name, item.Type, mass)
 				}
 			}
 		}
@@ -50,28 +51,28 @@ func (r *Repl) cargoInfoCommand(designType string, designID string) {
 			}
 		}
 		if vessel == nil {
-			fmt.Printf("错误: 未找到在轨航天器 '%s'\n", designID)
+			fmt.Printf(i18n.T("error_vessel_not_found"), designID)
 			return
 		}
 		if len(vessel.CargoBays) == 0 {
-			fmt.Printf("航天器 '%s' 没有货舱或没有装载货物。\n", vessel.Name)
+			fmt.Printf(i18n.T("cargo_info_no_cargo_vessel"), vessel.Name)
 			return
 		}
-		fmt.Printf("航天器 '%s' 货舱装载情况:\n", vessel.Name)
+		fmt.Printf(i18n.T("cargo_info_vessel_title"), vessel.Name)
 		for _, bay := range vessel.CargoBays {
-			fmt.Printf("  货舱 %d:\n", bay.Index)
+			fmt.Printf(i18n.T("cargo_info_cargo_bay"), bay.Index)
 			if len(bay.Loaded) == 0 {
-				fmt.Printf("    (空)\n")
+				fmt.Println(i18n.T("cargo_info_empty"))
 			} else {
 				for i, item := range bay.Loaded {
 					name := r.getCargoName(item)
 					mass := r.getCargoMass(item)
-					fmt.Printf("    [%d] %s (%s, 质量: %.0f kg)\n", i+1, name, item.Type, mass)
+					fmt.Printf(i18n.T("cargo_info_item"), i+1, name, item.Type, mass)
 				}
 			}
 		}
 	default:
-		fmt.Printf("错误: 不支持的查看类型 '%s'，可用: rocket, satellite\n", designType)
+		fmt.Printf(i18n.T("cargo_info_invalid_type"), designType)
 	}
 }
 
@@ -81,7 +82,7 @@ func (r *Repl) cargoLoadCommand(designID string, bayIndexStr string, cargoType s
 	// 解析货舱序号
 	bayIndex, err := strconv.Atoi(bayIndexStr)
 	if err != nil || bayIndex < 1 {
-		fmt.Println("错误: 无效的货舱序号，请输入正整数")
+		fmt.Println(i18n.T("cargo_load_invalid_bay"))
 		return
 	}
 
@@ -94,7 +95,7 @@ func (r *Repl) cargoLoadCommand(designID string, bayIndexStr string, cargoType s
 		}
 	}
 	if design == nil {
-		fmt.Printf("错误: 未找到火箭设计 '%s'\n", designID)
+		fmt.Printf(i18n.T("error_design_not_found"), designID)
 		return
 	}
 
@@ -111,7 +112,7 @@ func (r *Repl) cargoLoadCommand(designID string, bayIndexStr string, cargoType s
 		}
 	}
 	if cargoModIdx == -1 {
-		fmt.Printf("错误: 火箭设计中未找到货舱 %d\n", bayIndex)
+		fmt.Printf(i18n.T("cargo_load_bay_not_found"), bayIndex)
 		var bays []int
 		for i, mod := range design.Modules {
 			if mod.Type == domain.ModuleCargoBay {
@@ -119,13 +120,13 @@ func (r *Repl) cargoLoadCommand(designID string, bayIndexStr string, cargoType s
 			}
 		}
 		if len(bays) > 0 {
-			fmt.Printf("可用货舱序号: ")
+			fmt.Print(i18n.T("cargo_load_available_bays"))
 			for i := range bays {
 				fmt.Printf("%d ", i+1)
 			}
 			fmt.Println()
 		} else {
-			fmt.Println("火箭设计中没有货舱零件。")
+			fmt.Println(i18n.T("cargo_load_no_bay"))
 		}
 		return
 	}
@@ -134,11 +135,11 @@ func (r *Repl) cargoLoadCommand(designID string, bayIndexStr string, cargoType s
 	partID := design.Modules[cargoModIdx].PartID
 	part, ok := r.game.PartsDB[partID]
 	if !ok {
-		fmt.Printf("错误: 货舱零件 '%s' 不存在\n", partID)
+		fmt.Printf(i18n.T("cargo_load_part_not_found"), partID)
 		return
 	}
 	if part.CargoMassCapacity <= 0 {
-		fmt.Println("错误: 货舱容量为0，无法装载货物")
+		fmt.Println(i18n.T("cargo_load_capacity_zero"))
 		return
 	}
 
@@ -155,7 +156,7 @@ func (r *Repl) cargoLoadCommand(designID string, bayIndexStr string, cargoType s
 			}
 		}
 		if subDesign == nil {
-			fmt.Printf("错误: 未找到火箭设计 '%s'\n", cargoID)
+			fmt.Printf(i18n.T("error_design_not_found"), cargoID)
 			return
 		}
 		cargoMass = subDesign.PayloadMass
@@ -169,7 +170,7 @@ func (r *Repl) cargoLoadCommand(designID string, bayIndexStr string, cargoType s
 			}
 		}
 		if subDesign == nil {
-			fmt.Printf("错误: 未找到卫星设计 '%s'\n", cargoID)
+			fmt.Printf(i18n.T("error_sat_design_not_found"), cargoID)
 			return
 		}
 		cargoMass = subDesign.TotalMass
@@ -177,18 +178,18 @@ func (r *Repl) cargoLoadCommand(designID string, bayIndexStr string, cargoType s
 	case "part":
 		part2, ok := r.game.PartsDB[cargoID]
 		if !ok {
-			fmt.Printf("错误: 未找到零件 '%s'\n", cargoID)
+			fmt.Printf(i18n.T("cargo_load_part_not_found"), cargoID)
 			return
 		}
 		cargoMass = part2.MassDry
 		cargoName = part2.Name
 	default:
-		fmt.Printf("错误: 不支持的货物类型 '%s'，可用: rocket, satellite, part\n", cargoType)
+		fmt.Printf(i18n.T("cargo_load_invalid_type"), cargoType)
 		return
 	}
 
 	if cargoMass <= 0 {
-		fmt.Println("警告: 货物质量为0，仍可装载")
+		fmt.Println(i18n.T("cargo_load_zero_mass"))
 	}
 
 	// 查找或创建货舱装载记录
@@ -220,11 +221,11 @@ func (r *Repl) cargoLoadCommand(designID string, bayIndexStr string, cargoType s
 	}
 
 	if usedMass+cargoMass > part.CargoMassCapacity {
-		fmt.Printf("❌ 装载失败！货舱容量不足。\n")
-		fmt.Printf("   货舱容量: %.0f kg\n", part.CargoMassCapacity)
-		fmt.Printf("   已使用: %.0f kg\n", usedMass)
-		fmt.Printf("   本次货物质量: %.0f kg\n", cargoMass)
-		fmt.Printf("   超出: %.0f kg\n", usedMass+cargoMass-part.CargoMassCapacity)
+		fmt.Println(i18n.T("cargo_load_failed_capacity"))
+		fmt.Printf(i18n.T("cargo_load_capacity_info"), part.CargoMassCapacity)
+		fmt.Printf(i18n.T("cargo_load_used"), usedMass)
+		fmt.Printf(i18n.T("cargo_load_cargo_mass"), cargoMass)
+		fmt.Printf(i18n.T("cargo_load_exceed"), usedMass+cargoMass-part.CargoMassCapacity)
 		return
 	}
 
@@ -239,17 +240,17 @@ func (r *Repl) cargoLoadCommand(designID string, bayIndexStr string, cargoType s
 	// 重新计算 Δv
 	stages, err := engine.PairModules(design.Modules)
 	if err != nil {
-		fmt.Printf("警告: 重新计算物理参数失败: %v\n", err)
+		fmt.Printf(i18n.T("cargo_load_recalc_failed"), err)
 	} else {
 		design.DeltaV = engine.CalcDeltaV(stages, design.PayloadMass)
 		design.MaxAccel = engine.CalcMaxAccel(stages, design.PayloadMass)
 		design.Stages = len(stages)
 	}
 
-	fmt.Printf("✅ 装载成功！\n")
-	fmt.Printf("   货物: %s (质量: %.0f kg)\n", cargoName, cargoMass)
-	fmt.Printf("   已装入货舱 %d\n", bayIndex)
-	fmt.Printf("   当前货舱使用: %.0f / %.0f kg\n", usedMass+cargoMass, part.CargoMassCapacity)
-	fmt.Printf("   火箭总载荷更新: %.0f kg\n", design.PayloadMass)
-	fmt.Printf("   更新后 Δv: %.0f m/s\n", design.DeltaV)
+	fmt.Println(i18n.T("cargo_load_success"))
+	fmt.Printf(i18n.T("cargo_load_item"), cargoName, cargoMass)
+	fmt.Printf(i18n.T("cargo_load_bay"), bayIndex)
+	fmt.Printf(i18n.T("cargo_load_usage"), usedMass+cargoMass, part.CargoMassCapacity)
+	fmt.Printf(i18n.T("cargo_load_payload"), design.PayloadMass)
+	fmt.Printf(i18n.T("cargo_load_delta_v"), design.DeltaV)
 }

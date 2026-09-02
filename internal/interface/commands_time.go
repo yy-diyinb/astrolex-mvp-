@@ -2,17 +2,21 @@
 
 import (
 	"fmt"
+
+	"astrolex/internal/i18n"
 )
 
-// ==================== 显示日期 ====================
+// ==================== 时间管理命令 ====================
+
+// showDate 显示当前游戏时间
 func (r *Repl) showDate() {
-	fmt.Printf("当前游戏时间: %s\n", r.game.CurrentTime.Format("2006-01-02 15:04:05"))
+	fmt.Printf(i18n.T("date_current")+"\n", r.game.CurrentTime.Format("2006-01-02 15:04:05"))
 }
 
-// ==================== 时间推进 ====================
+// advanceTime 推进游戏时间并检查过期合约
 func (r *Repl) advanceTime(days int) {
 	r.game.CurrentTime = r.game.CurrentTime.AddDate(0, 0, days)
-	fmt.Printf("时间前进 %d 天，当前日期: %s\n", days, r.game.CurrentTime.Format("2006-01-02"))
+	fmt.Printf(i18n.T("tick_advanced")+"\n", days, r.game.CurrentTime.Format("2006-01-02"))
 	expiredCount := 0
 	for i := range r.game.Contracts {
 		contract := &r.game.Contracts[i]
@@ -22,11 +26,11 @@ func (r *Repl) advanceTime(days int) {
 			if r.activeContractID == contract.ID {
 				r.activeContractID = ""
 			}
-			fmt.Printf("⚠️ 合约 %s 已过期，任务失败\n", contract.ID)
+			fmt.Printf(i18n.T("tick_expired")+"\n", contract.ID)
 			expiredCount++
 		}
 	}
 	if expiredCount == 0 {
-		fmt.Println("没有过期的合约。")
+		fmt.Println(i18n.T("tick_no_expired"))
 	}
 }
