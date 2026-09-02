@@ -1,0 +1,34 @@
+{
+
+"initial_credits": 9999999,
+"initial_time": "2026-07-14T12:00:00Z",
+"reputation": {
+"safety": 0,
+"speed": 0,
+"politic": {}
+ },
+"physics": {
+ "atmosphere_loss_mps": 1500.0,
+"fuel_price_credit_per_kg": 0.05,
+"launch_pad_fee": 500,
+    "window_search_days": 365,
+    "leo_delta_v_required": 9400.0
+  },
+  "satellite": {
+    "initial_power_wh": 1000,
+    "max_power_wh": 1000,
+    "measure_power_cost": 50,
+    "send_power_cost": 30,
+    "data_reward_per_mb": 10
+  },
+  "contract": {
+    "budget_base": 50000,
+    "budget_mass_factor": 0.8,
+    "budget_distance_factor": 10000,
+    "reward_base": 5000,
+    "reward_mass_factor": 0.05,
+    "reward_distance_factor": 2000,
+    "return_min": 0.4,
+    "return_max": 0.9
+  }
+}

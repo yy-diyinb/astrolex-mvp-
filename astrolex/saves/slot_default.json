@@ -1,0 +1,1197 @@
+{
+  "version": "0.2.0",
+  "current_time": "2026-07-14T12:00:00Z",
+  "player": {
+    "credits": 9792499,
+    "reputation": {
+      "safety": 0,
+      "speed": 0,
+      "politic": {}
+    },
+    "unlocked_parts": null,
+    "unlocked_bases": null,
+    "notoriety": null
+  },
+  "star_system": {
+    "celestial_bodies": {
+      "earth": {
+        "id": "earth",
+        "name": "地球",
+        "parent_id": "sol",
+        "mass": 5.9724e+24,
+        "radius": 6371,
+        "rotation_period": 24,
+        "semi_major_axis": 149598262,
+        "eccentricity": 0.01671,
+        "inclination": 0,
+        "longitude_asc_node": 0,
+        "argument_periapsis": 1.7968,
+        "mean_anomaly": 0,
+        "surface_gravity": 9.80665,
+        "delta_v_to_low_orbit": 9400,
+        "gm": 398600.4418,
+        "period": 365.256,
+        "epoch": "2000-01-01T12:00:00Z",
+        "mean_anomaly_at_epoch": 0,
+        "orbital_layers": [
+          {
+            "name": "低轨道",
+            "altitude_min": 200,
+            "altitude_max": 500,
+            "typical_altitude": 350
+          },
+          {
+            "name": "中轨道",
+            "altitude_min": 1000,
+            "altitude_max": 20000,
+            "typical_altitude": 5000
+          },
+          {
+            "name": "高轨道 (同步)",
+            "altitude_min": 35786,
+            "altitude_max": 40000,
+            "typical_altitude": 35786
+          }
+        ],
+        "hill_sphere_radius": 1496000
+      },
+      "jupiter": {
+        "id": "jupiter",
+        "name": "木星",
+        "parent_id": "sol",
+        "mass": 1.8986e+27,
+        "radius": 69911,
+        "rotation_period": 9.93,
+        "semi_major_axis": 778547200,
+        "eccentricity": 0.04839,
+        "inclination": 0.02277,
+        "longitude_asc_node": 1.7544,
+        "argument_periapsis": 0.598,
+        "mean_anomaly": 0.6,
+        "surface_gravity": 24.79,
+        "delta_v_to_low_orbit": 21000,
+        "gm": 126686534,
+        "period": 4332.589,
+        "epoch": "2000-01-01T12:00:00Z",
+        "mean_anomaly_at_epoch": 0.6,
+        "orbital_layers": [
+          {
+            "name": "低木星轨道",
+            "altitude_min": 500,
+            "altitude_max": 2000,
+            "typical_altitude": 1000
+          },
+          {
+            "name": "中木星轨道",
+            "altitude_min": 2000,
+            "altitude_max": 50000,
+            "typical_altitude": 10000
+          },
+          {
+            "name": "高木星轨道 (同步)",
+            "altitude_min": 88800,
+            "altitude_max": 100000,
+            "typical_altitude": 88800
+          }
+        ],
+        "hill_sphere_radius": 48000000
+      },
+      "mars": {
+        "id": "mars",
+        "name": "火星",
+        "parent_id": "sol",
+        "mass": 6.4171e+23,
+        "radius": 3389.5,
+        "rotation_period": 24.6,
+        "semi_major_axis": 227939100,
+        "eccentricity": 0.09341,
+        "inclination": 0.0323,
+        "longitude_asc_node": 0.8656,
+        "argument_periapsis": 4.6655,
+        "mean_anomaly": 0,
+        "surface_gravity": 3.721,
+        "delta_v_to_low_orbit": 4100,
+        "gm": 42828.37,
+        "period": 686.98,
+        "epoch": "2000-01-01T12:00:00Z",
+        "mean_anomaly_at_epoch": 0,
+        "orbital_layers": [
+          {
+            "name": "低火星轨道",
+            "altitude_min": 200,
+            "altitude_max": 500,
+            "typical_altitude": 300
+          },
+          {
+            "name": "中火星轨道",
+            "altitude_min": 1000,
+            "altitude_max": 10000,
+            "typical_altitude": 5000
+          },
+          {
+            "name": "高火星轨道 (同步)",
+            "altitude_min": 17000,
+            "altitude_max": 20000,
+            "typical_altitude": 17000
+          }
+        ],
+        "hill_sphere_radius": 980000
+      },
+      "mercury": {
+        "id": "mercury",
+        "name": "水星",
+        "parent_id": "sol",
+        "mass": 3.3011e+23,
+        "radius": 2439.7,
+        "rotation_period": 1407.6,
+        "semi_major_axis": 57909050,
+        "eccentricity": 0.20563,
+        "inclination": 0.12226,
+        "longitude_asc_node": 0.84356,
+        "argument_periapsis": 1.3434,
+        "mean_anomaly": 4.4026,
+        "surface_gravity": 3.7,
+        "delta_v_to_low_orbit": 3000,
+        "gm": 22032.09,
+        "period": 87.969,
+        "epoch": "2000-01-01T12:00:00Z",
+        "mean_anomaly_at_epoch": 4.4026,
+        "orbital_layers": [
+          {
+            "name": "低水星轨道",
+            "altitude_min": 100,
+            "altitude_max": 300,
+            "typical_altitude": 200
+          },
+          {
+            "name": "中水星轨道",
+            "altitude_min": 300,
+            "altitude_max": 1000,
+            "typical_altitude": 600
+          },
+          {
+            "name": "高水星轨道",
+            "altitude_min": 1000,
+            "altitude_max": 2000,
+            "typical_altitude": 1500
+          }
+        ],
+        "hill_sphere_radius": 220000
+      },
+      "moon": {
+        "id": "moon",
+        "name": "月球",
+        "parent_id": "earth",
+        "mass": 7.342e+22,
+        "radius": 1737,
+        "rotation_period": 655.72,
+        "semi_major_axis": 384400,
+        "eccentricity": 0.0549,
+        "inclination": 0.0899,
+        "longitude_asc_node": 0,
+        "argument_periapsis": 0.318,
+        "mean_anomaly": 0,
+        "surface_gravity": 1.62,
+        "delta_v_to_low_orbit": 1730,
+        "gm": 4902.8,
+        "period": 27.322,
+        "epoch": "2000-01-01T12:00:00Z",
+        "mean_anomaly_at_epoch": 0,
+        "orbital_layers": [
+          {
+            "name": "低月球轨道",
+            "altitude_min": 100,
+            "altitude_max": 500,
+            "typical_altitude": 200
+          },
+          {
+            "name": "中月球轨道",
+            "altitude_min": 500,
+            "altitude_max": 5000,
+            "typical_altitude": 2000
+          },
+          {
+            "name": "高月球轨道",
+            "altitude_min": 5000,
+            "altitude_max": 10000,
+            "typical_altitude": 7000
+          }
+        ],
+        "hill_sphere_radius": 58000
+      },
+      "neptune": {
+        "id": "neptune",
+        "name": "海王星",
+        "parent_id": "sol",
+        "mass": 1.02413e+26,
+        "radius": 24622,
+        "rotation_period": 16.11,
+        "semi_major_axis": 4504300000,
+        "eccentricity": 0.00859,
+        "inclination": 0.03092,
+        "longitude_asc_node": 2.372,
+        "argument_periapsis": 0.4678,
+        "mean_anomaly": 1.3891,
+        "surface_gravity": 11.15,
+        "delta_v_to_low_orbit": 23000,
+        "gm": 6835100,
+        "period": 60182,
+        "epoch": "2000-01-01T12:00:00Z",
+        "mean_anomaly_at_epoch": 1.3891,
+        "orbital_layers": [
+          {
+            "name": "低海王星轨道",
+            "altitude_min": 500,
+            "altitude_max": 2000,
+            "typical_altitude": 1000
+          },
+          {
+            "name": "中海王星轨道",
+            "altitude_min": 2000,
+            "altitude_max": 30000,
+            "typical_altitude": 10000
+          },
+          {
+            "name": "高海王星轨道 (同步)",
+            "altitude_min": 160000,
+            "altitude_max": 180000,
+            "typical_altitude": 160000
+          }
+        ],
+        "hill_sphere_radius": 87000000
+      },
+      "phobos": {
+        "id": "phobos",
+        "name": "火卫一",
+        "parent_id": "mars",
+        "mass": 10600000000000000,
+        "radius": 11.1,
+        "rotation_period": 7.66,
+        "semi_major_axis": 9376,
+        "eccentricity": 0.0151,
+        "inclination": 0.026,
+        "longitude_asc_node": 0,
+        "argument_periapsis": 0,
+        "mean_anomaly": 0,
+        "surface_gravity": 0.0057,
+        "delta_v_to_low_orbit": 500,
+        "gm": 0.0007,
+        "period": 0.319,
+        "epoch": "2000-01-01T12:00:00Z",
+        "mean_anomaly_at_epoch": 0,
+        "orbital_layers": [
+          {
+            "name": "低火卫一轨道",
+            "altitude_min": 10,
+            "altitude_max": 30,
+            "typical_altitude": 20
+          },
+          {
+            "name": "中火卫一轨道",
+            "altitude_min": 30,
+            "altitude_max": 80,
+            "typical_altitude": 50
+          },
+          {
+            "name": "高火卫一轨道",
+            "altitude_min": 80,
+            "altitude_max": 150,
+            "typical_altitude": 100
+          }
+        ],
+        "hill_sphere_radius": 5000
+      },
+      "saturn": {
+        "id": "saturn",
+        "name": "土星",
+        "parent_id": "sol",
+        "mass": 5.6836e+26,
+        "radius": 58232,
+        "rotation_period": 10.66,
+        "semi_major_axis": 1433449370,
+        "eccentricity": 0.05386,
+        "inclination": 0.0434,
+        "longitude_asc_node": 1.9824,
+        "argument_periapsis": 1.3452,
+        "mean_anomaly": 5.6353,
+        "surface_gravity": 10.44,
+        "delta_v_to_low_orbit": 26000,
+        "gm": 37940584,
+        "period": 10759.22,
+        "epoch": "2000-01-01T12:00:00Z",
+        "mean_anomaly_at_epoch": 5.6353,
+        "orbital_layers": [
+          {
+            "name": "低土星轨道",
+            "altitude_min": 500,
+            "altitude_max": 2000,
+            "typical_altitude": 1000
+          },
+          {
+            "name": "中土星轨道",
+            "altitude_min": 2000,
+            "altitude_max": 50000,
+            "typical_altitude": 15000
+          },
+          {
+            "name": "高土星轨道 (同步)",
+            "altitude_min": 117000,
+            "altitude_max": 130000,
+            "typical_altitude": 117000
+          }
+        ],
+        "hill_sphere_radius": 54000000
+      },
+      "sol": {
+        "id": "sol",
+        "name": "太阳",
+        "parent_id": "",
+        "mass": 1.989e+30,
+        "radius": 696340,
+        "rotation_period": 587.28,
+        "semi_major_axis": 0,
+        "eccentricity": 0,
+        "inclination": 0,
+        "longitude_asc_node": 0,
+        "argument_periapsis": 0,
+        "mean_anomaly": 0,
+        "surface_gravity": 274,
+        "delta_v_to_low_orbit": 0,
+        "gm": 132712440041.93938,
+        "period": 0,
+        "epoch": "2000-01-01T12:00:00Z",
+        "mean_anomaly_at_epoch": 0,
+        "orbital_layers": [],
+        "hill_sphere_radius": 0
+      },
+      "uranus": {
+        "id": "uranus",
+        "name": "天王星",
+        "parent_id": "sol",
+        "mass": 8.681e+25,
+        "radius": 25362,
+        "rotation_period": -17.24,
+        "semi_major_axis": 2870972200,
+        "eccentricity": 0.04717,
+        "inclination": 0.01349,
+        "longitude_asc_node": 1.2903,
+        "argument_periapsis": 1.5077,
+        "mean_anomaly": 1.7069,
+        "surface_gravity": 8.69,
+        "delta_v_to_low_orbit": 17000,
+        "gm": 5794548.6,
+        "period": 30688.5,
+        "epoch": "2000-01-01T12:00:00Z",
+        "mean_anomaly_at_epoch": 1.7069,
+        "orbital_layers": [
+          {
+            "name": "低天王星轨道",
+            "altitude_min": 500,
+            "altitude_max": 2000,
+            "typical_altitude": 1000
+          },
+          {
+            "name": "中天王星轨道",
+            "altitude_min": 2000,
+            "altitude_max": 30000,
+            "typical_altitude": 10000
+          },
+          {
+            "name": "高天王星轨道 (同步)",
+            "altitude_min": 83000,
+            "altitude_max": 95000,
+            "typical_altitude": 83000
+          }
+        ],
+        "hill_sphere_radius": 52000000
+      },
+      "venus": {
+        "id": "venus",
+        "name": "金星",
+        "parent_id": "sol",
+        "mass": 4.8675e+24,
+        "radius": 6051.8,
+        "rotation_period": -5832.6,
+        "semi_major_axis": 108208000,
+        "eccentricity": 0.00677,
+        "inclination": 0.05918,
+        "longitude_asc_node": 1.3383,
+        "argument_periapsis": 0.4574,
+        "mean_anomaly": 3.1761,
+        "surface_gravity": 8.87,
+        "delta_v_to_low_orbit": 8600,
+        "gm": 324858.592,
+        "period": 224.701,
+        "epoch": "2000-01-01T12:00:00Z",
+        "mean_anomaly_at_epoch": 3.1761,
+        "orbital_layers": [
+          {
+            "name": "低金星轨道",
+            "altitude_min": 200,
+            "altitude_max": 500,
+            "typical_altitude": 300
+          },
+          {
+            "name": "中金星轨道",
+            "altitude_min": 1000,
+            "altitude_max": 10000,
+            "typical_altitude": 5000
+          },
+          {
+            "name": "高金星轨道",
+            "altitude_min": 10000,
+            "altitude_max": 30000,
+            "typical_altitude": 20000
+          }
+        ],
+        "hill_sphere_radius": 1000000
+      }
+    }
+  },
+  "parts_db": {
+    "av-1": {
+      "id": "av-1",
+      "name": "AV-1 通用航电",
+      "category": "Avionics",
+      "supplier_id": "mars_tech",
+      "mass_dry": 150,
+      "mass_fuel_max": 0,
+      "thrust": 0,
+      "isp": 0,
+      "failure_rate": 0.008,
+      "diameter": 1,
+      "delivery_time": 15,
+      "interface_tag": "UNIV-BUS",
+      "cost": 5000,
+      "cargo_mass_capacity": 0,
+      "is_control_chip": true
+    },
+    "cargo_bay_large": {
+      "id": "cargo_bay_large",
+      "name": "大型货舱",
+      "category": "CargoBay",
+      "supplier_id": "earth_heavy",
+      "mass_dry": 2500,
+      "mass_fuel_max": 0,
+      "thrust": 0,
+      "isp": 0,
+      "failure_rate": 0.001,
+      "diameter": 5,
+      "delivery_time": 30,
+      "interface_tag": "CARGO",
+      "cost": 25000,
+      "cargo_mass_capacity": 30000,
+      "is_control_chip": false
+    },
+    "cargo_bay_medium": {
+      "id": "cargo_bay_medium",
+      "name": "中型货舱",
+      "category": "CargoBay",
+      "supplier_id": "earth_aero",
+      "mass_dry": 1200,
+      "mass_fuel_max": 0,
+      "thrust": 0,
+      "isp": 0,
+      "failure_rate": 0.001,
+      "diameter": 3.5,
+      "delivery_time": 25,
+      "interface_tag": "CARGO",
+      "cost": 15000,
+      "cargo_mass_capacity": 10000,
+      "is_control_chip": false
+    },
+    "cargo_bay_small": {
+      "id": "cargo_bay_small",
+      "name": "小型货舱",
+      "category": "CargoBay",
+      "supplier_id": "earth_aero",
+      "mass_dry": 500,
+      "mass_fuel_max": 0,
+      "thrust": 0,
+      "isp": 0,
+      "failure_rate": 0.001,
+      "diameter": 2.5,
+      "delivery_time": 20,
+      "interface_tag": "CARGO",
+      "cost": 8000,
+      "cargo_mass_capacity": 3000,
+      "is_control_chip": false
+    },
+    "faring_6m": {
+      "id": "faring_6m",
+      "name": "6米标准整流罩",
+      "category": "AeroShell",
+      "supplier_id": "earth_aero",
+      "mass_dry": 2800,
+      "mass_fuel_max": 0,
+      "thrust": 0,
+      "isp": 0,
+      "failure_rate": 0.0005,
+      "diameter": 6,
+      "delivery_time": 25,
+      "interface_tag": "MAG-7",
+      "cost": 12000,
+      "cargo_mass_capacity": 0,
+      "is_control_chip": false
+    },
+    "ion_x3": {
+      "id": "ion_x3",
+      "name": "X3 离子推进器",
+      "category": "Engine",
+      "supplier_id": "mars_tech",
+      "mass_dry": 150,
+      "mass_fuel_max": 0,
+      "thrust": 5.4,
+      "isp": 4200,
+      "failure_rate": 0.005,
+      "diameter": 1.2,
+      "delivery_time": 45,
+      "interface_tag": "ELECTRIC",
+      "cost": 60000,
+      "cargo_mass_capacity": 0,
+      "is_control_chip": false
+    },
+    "kr-99": {
+      "id": "kr-99",
+      "name": "KR-99 液氧煤油引擎",
+      "category": "Engine",
+      "supplier_id": "earth_heavy",
+      "mass_dry": 2200,
+      "mass_fuel_max": 0,
+      "thrust": 4200,
+      "isp": 330,
+      "failure_rate": 0.003,
+      "diameter": 3,
+      "delivery_time": 30,
+      "interface_tag": "MAG-7",
+      "cost": 15000,
+      "cargo_mass_capacity": 0,
+      "is_control_chip": false
+    },
+    "nerv_a": {
+      "id": "nerv_a",
+      "name": "NERVA-A 核热引擎",
+      "category": "Engine",
+      "supplier_id": "earth_heavy",
+      "mass_dry": 3400,
+      "mass_fuel_max": 0,
+      "thrust": 250,
+      "isp": 850,
+      "failure_rate": 0.01,
+      "diameter": 3.5,
+      "delivery_time": 60,
+      "interface_tag": "NUCLEAR",
+      "cost": 80000,
+      "cargo_mass_capacity": 0,
+      "is_control_chip": false
+    },
+    "nerv_b": {
+      "id": "nerv_b",
+      "name": "NERVA-B 核热引擎 (改进型)",
+      "category": "Engine",
+      "supplier_id": "earth_heavy",
+      "mass_dry": 3800,
+      "mass_fuel_max": 0,
+      "thrust": 320,
+      "isp": 920,
+      "failure_rate": 0.008,
+      "diameter": 4,
+      "delivery_time": 75,
+      "interface_tag": "NUCLEAR",
+      "cost": 120000,
+      "cargo_mass_capacity": 0,
+      "is_control_chip": false
+    },
+    "sat_1": {
+      "id": "sat_1",
+      "name": "CargoSat (卫星)",
+      "category": "Satellite",
+      "supplier_id": "player",
+      "mass_dry": 180,
+      "mass_fuel_max": 0,
+      "thrust": 0,
+      "isp": 0,
+      "failure_rate": 0.001,
+      "diameter": 0,
+      "delivery_time": 0,
+      "interface_tag": "SAT",
+      "cost": 18000,
+      "satellite_id": "sat_1",
+      "cargo_mass_capacity": 0,
+      "is_control_chip": false
+    },
+    "t-4000": {
+      "id": "t-4000",
+      "name": "T-4000 燃料箱",
+      "category": "FuelTank",
+      "supplier_id": "earth_aero",
+      "mass_dry": 1800,
+      "mass_fuel_max": 40000,
+      "thrust": 0,
+      "isp": 0,
+      "failure_rate": 0.001,
+      "diameter": 3.2,
+      "delivery_time": 20,
+      "interface_tag": "MAG-7",
+      "cost": 8000,
+      "cargo_mass_capacity": 0,
+      "is_control_chip": false
+    },
+    "vasmir": {
+      "id": "vasmir",
+      "name": "VASIMR 可变比冲磁等离子体引擎",
+      "category": "Engine",
+      "supplier_id": "mars_tech",
+      "mass_dry": 800,
+      "mass_fuel_max": 0,
+      "thrust": 50,
+      "isp": 5000,
+      "failure_rate": 0.012,
+      "diameter": 2.5,
+      "delivery_time": 80,
+      "interface_tag": "ELECTRIC",
+      "cost": 200000,
+      "cargo_mass_capacity": 0,
+      "is_control_chip": false
+    }
+  },
+  "suppliers_db": {
+    "earth_aero": {
+      "id": "earth_aero",
+      "name": "地球宇航系统",
+      "owner": "earth_gov",
+      "parts_list": [
+        "t-4000",
+        "faring_6m"
+      ],
+      "political_status": "Normal",
+      "delivery_time_mod": 1.1
+    },
+    "earth_heavy": {
+      "id": "earth_heavy",
+      "name": "地球重工联合",
+      "owner": "earth_gov",
+      "parts_list": [
+        "kr-99"
+      ],
+      "political_status": "Normal",
+      "delivery_time_mod": 1
+    },
+    "mars_tech": {
+      "id": "mars_tech",
+      "name": "火星科技集团",
+      "owner": "mars_ind",
+      "parts_list": [
+        "av-1"
+      ],
+      "political_status": "Normal",
+      "delivery_time_mod": 1.2
+    }
+  },
+  "bases_db": {
+    "baikonur": {
+      "id": "baikonur",
+      "name": "拜科努尔发射场",
+      "owner": "earth_gov",
+      "latitude": 45.96,
+      "launch_slots": 2,
+      "weather": {
+        "wind_speed": 8.1,
+        "lightning_risk": 0.3,
+        "updated_at": "2247-09-14T03:22:15Z"
+      },
+      "fuel_types": [
+        "RP-1"
+      ],
+      "logistics_modifier": 1.2
+    },
+    "kennedy": {
+      "id": "kennedy",
+      "name": "肯尼迪航天中心",
+      "owner": "earth_gov",
+      "latitude": 28.57,
+      "launch_slots": 3,
+      "weather": {
+        "wind_speed": 5.2,
+        "lightning_risk": 0.15,
+        "updated_at": "2247-09-14T03:22:15Z"
+      },
+      "fuel_types": [
+        "RP-1",
+        "LH2"
+      ],
+      "logistics_modifier": 1
+    },
+    "mars_base_1": {
+      "id": "mars_base_1",
+      "name": "火星基地阿尔法",
+      "owner": "mars_ind",
+      "latitude": -4.5,
+      "launch_slots": 1,
+      "weather": {
+        "wind_speed": 25,
+        "lightning_risk": 0.05,
+        "updated_at": "2247-09-14T03:22:15Z"
+      },
+      "fuel_types": [
+        "Methane"
+      ],
+      "logistics_modifier": 0.8
+    }
+  },
+  "contracts": [],
+  "launches": [
+    {
+      "id": "mission_1",
+      "contract_id": "",
+      "rocket_design": {
+        "id": "design_1",
+        "name": "RocketWithCargo",
+        "contract_id": "",
+        "modules": [
+          {
+            "type": "整流罩",
+            "part_id": "faring_6m",
+            "position": 0
+          },
+          {
+            "type": "航电",
+            "part_id": "av-1",
+            "position": 0
+          },
+          {
+            "type": "货舱",
+            "part_id": "cargo_bay_small",
+            "position": 0
+          },
+          {
+            "type": "燃料箱",
+            "part_id": "t-4000",
+            "position": 0
+          },
+          {
+            "type": "引擎",
+            "part_id": "kr-99",
+            "position": 0
+          },
+          {
+            "type": "燃料箱",
+            "part_id": "t-4000",
+            "position": 0
+          },
+          {
+            "type": "引擎",
+            "part_id": "kr-99",
+            "position": 0
+          },
+          {
+            "type": "燃料箱",
+            "part_id": "t-4000",
+            "position": 0
+          },
+          {
+            "type": "引擎",
+            "part_id": "kr-99",
+            "position": 0
+          },
+          {
+            "type": "燃料箱",
+            "part_id": "t-4000",
+            "position": 0
+          },
+          {
+            "type": "引擎",
+            "part_id": "kr-99",
+            "position": 0
+          },
+          {
+            "type": "燃料箱",
+            "part_id": "t-4000",
+            "position": 0
+          },
+          {
+            "type": "引擎",
+            "part_id": "kr-99",
+            "position": 0
+          },
+          {
+            "type": "燃料箱",
+            "part_id": "t-4000",
+            "position": 0
+          },
+          {
+            "type": "引擎",
+            "part_id": "kr-99",
+            "position": 0
+          },
+          {
+            "type": "燃料箱",
+            "part_id": "t-4000",
+            "position": 0
+          },
+          {
+            "type": "引擎",
+            "part_id": "kr-99",
+            "position": 0
+          },
+          {
+            "type": "燃料箱",
+            "part_id": "t-4000",
+            "position": 0
+          },
+          {
+            "type": "引擎",
+            "part_id": "kr-99",
+            "position": 0
+          }
+        ],
+        "payload_mass": 280,
+        "total_mass": 0,
+        "delta_v": 15349.864084662497,
+        "max_accel": 166.64622935826065,
+        "stages": 8,
+        "cargo_bays": [
+          {
+            "index": 1,
+            "loaded": [
+              {
+                "type": "satellite",
+                "id": "sat_1"
+              }
+            ]
+          }
+        ]
+      },
+      "base_id": "",
+      "launch_time": "2026-07-14T12:00:00Z",
+      "success": true,
+      "final_delta_v": 15349.864084662497,
+      "redundancies": []
+    }
+  ],
+  "log_book": [],
+  "config": {
+    "enable_sandbox": false,
+    "enable_ecc": false,
+    "time_scale": 0,
+    "auto_save_interval": 0
+  },
+  "rocket_designs": [
+    {
+      "id": "design_1",
+      "name": "RocketWithCargo",
+      "contract_id": "",
+      "modules": [
+        {
+          "type": "整流罩",
+          "part_id": "faring_6m",
+          "position": 0
+        },
+        {
+          "type": "航电",
+          "part_id": "av-1",
+          "position": 0
+        },
+        {
+          "type": "货舱",
+          "part_id": "cargo_bay_small",
+          "position": 0
+        },
+        {
+          "type": "燃料箱",
+          "part_id": "t-4000",
+          "position": 0
+        },
+        {
+          "type": "引擎",
+          "part_id": "kr-99",
+          "position": 0
+        },
+        {
+          "type": "燃料箱",
+          "part_id": "t-4000",
+          "position": 0
+        },
+        {
+          "type": "引擎",
+          "part_id": "kr-99",
+          "position": 0
+        },
+        {
+          "type": "燃料箱",
+          "part_id": "t-4000",
+          "position": 0
+        },
+        {
+          "type": "引擎",
+          "part_id": "kr-99",
+          "position": 0
+        },
+        {
+          "type": "燃料箱",
+          "part_id": "t-4000",
+          "position": 0
+        },
+        {
+          "type": "引擎",
+          "part_id": "kr-99",
+          "position": 0
+        },
+        {
+          "type": "燃料箱",
+          "part_id": "t-4000",
+          "position": 0
+        },
+        {
+          "type": "引擎",
+          "part_id": "kr-99",
+          "position": 0
+        },
+        {
+          "type": "燃料箱",
+          "part_id": "t-4000",
+          "position": 0
+        },
+        {
+          "type": "引擎",
+          "part_id": "kr-99",
+          "position": 0
+        },
+        {
+          "type": "燃料箱",
+          "part_id": "t-4000",
+          "position": 0
+        },
+        {
+          "type": "引擎",
+          "part_id": "kr-99",
+          "position": 0
+        },
+        {
+          "type": "燃料箱",
+          "part_id": "t-4000",
+          "position": 0
+        },
+        {
+          "type": "引擎",
+          "part_id": "kr-99",
+          "position": 0
+        }
+      ],
+      "payload_mass": 280,
+      "total_mass": 0,
+      "delta_v": 15349.864084662497,
+      "max_accel": 166.64622935826065,
+      "stages": 8,
+      "cargo_bays": [
+        {
+          "index": 1,
+          "loaded": [
+            {
+              "type": "satellite",
+              "id": "sat_1"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "satellite_designs": [
+    {
+      "id": "sat_1",
+      "name": "CargoSat",
+      "modules": [
+        {
+          "id": "sol_panel_large",
+          "name": "太阳能板 (大型)",
+          "type": "Power",
+          "mass": 120,
+          "power_consume": -300,
+          "data_rate": 0,
+          "cost": 8000
+        },
+        {
+          "id": "camera",
+          "name": "可见光相机",
+          "type": "Sensor",
+          "mass": 40,
+          "power_consume": 80,
+          "data_rate": 200,
+          "cost": 6000
+        },
+        {
+          "id": "antenna",
+          "name": "通信天线",
+          "type": "Comms",
+          "mass": 20,
+          "power_consume": 50,
+          "data_rate": 100,
+          "cost": 4000
+        }
+      ],
+      "total_mass": 180,
+      "total_power": -170,
+      "total_data_rate": 300,
+      "total_cost": 18000,
+      "created_at": "2026-07-24T14:08:08.518155823+08:00"
+    }
+  ],
+  "vessels": [
+    {
+      "id": "main_1",
+      "name": "RocketWithCargo (组合体)",
+      "type": "COMPOSITE",
+      "design_id": "",
+      "orbit_body_id": "earth",
+      "orbit_altitude": 35786,
+      "launch_time": "2026-07-14T12:00:00Z",
+      "power": 1500,
+      "max_power": 1500,
+      "data_stored": 0,
+      "data_rate": 300,
+      "delta_v_remaining": 295.3310700027687,
+      "is_active": true,
+      "is_assembly": true,
+      "docked_with": [
+        "cargo_2"
+      ],
+      "modules": [
+        {
+          "id": "sol_panel_large",
+          "name": "太阳能板 (大型)",
+          "type": "Power",
+          "mass": 120,
+          "power_consume": -300,
+          "data_rate": 0,
+          "cost": 8000
+        },
+        {
+          "id": "camera",
+          "name": "可见光相机",
+          "type": "Sensor",
+          "mass": 40,
+          "power_consume": 80,
+          "data_rate": 200,
+          "cost": 6000
+        },
+        {
+          "id": "antenna",
+          "name": "通信天线",
+          "type": "Comms",
+          "mass": 20,
+          "power_consume": 50,
+          "data_rate": 100,
+          "cost": 4000
+        }
+      ],
+      "arrival_time": "0001-01-01T00:00:00Z",
+      "flyby_history": [],
+      "heliocentric_pos": [
+        -149167853.70578498,
+        -29459731.675178938
+      ],
+      "heliocentric_vel": [
+        5.677040141951543,
+        -28.745404157566988
+      ],
+      "cargo_bays": [
+        {
+          "index": 1,
+          "loaded": []
+        }
+      ],
+      "has_control_center": true,
+      "firmware": [
+        "cargo_2"
+      ],
+      "ecc_programs": [],
+      "active_program_id": ""
+    },
+    {
+      "id": "cargo_2",
+      "name": "CargoSat (卫星)",
+      "type": "CARGO",
+      "design_id": "",
+      "orbit_body_id": "docked",
+      "orbit_altitude": 35786,
+      "launch_time": "2026-07-14T12:00:00Z",
+      "power": 500,
+      "max_power": 500,
+      "data_stored": 0,
+      "data_rate": 300,
+      "delta_v_remaining": 0,
+      "is_active": false,
+      "is_assembly": false,
+      "docked_with": [],
+      "modules": [
+        {
+          "id": "sol_panel_large",
+          "name": "太阳能板 (大型)",
+          "type": "Power",
+          "mass": 120,
+          "power_consume": -300,
+          "data_rate": 0,
+          "cost": 8000
+        },
+        {
+          "id": "camera",
+          "name": "可见光相机",
+          "type": "Sensor",
+          "mass": 40,
+          "power_consume": 80,
+          "data_rate": 200,
+          "cost": 6000
+        },
+        {
+          "id": "antenna",
+          "name": "通信天线",
+          "type": "Comms",
+          "mass": 20,
+          "power_consume": 50,
+          "data_rate": 100,
+          "cost": 4000
+        }
+      ],
+      "arrival_time": "0001-01-01T00:00:00Z",
+      "flyby_history": null,
+      "heliocentric_pos": [
+        -149167853.70578498,
+        -29459731.675178938
+      ],
+      "heliocentric_vel": [
+        5.677040141951543,
+        -28.745404157566988
+      ],
+      "cargo_bays": [],
+      "has_control_center": false,
+      "firmware": [],
+      "ecc_programs": null,
+      "active_program_id": ""
+    }
+  ],
+  "assembly_projects": [
+    {
+      "id": "assem_1",
+      "name": "\"空间站核心\"",
+      "status": "completed",
+      "steps": [
+        {
+          "id": 1,
+          "description": "卫星 sat_1 x1",
+          "module_id": "sat_1",
+          "quantity": 1,
+          "launched": true,
+          "docked": true,
+          "vessel_id": "",
+          "launch_time": "0001-01-01T00:00:00Z",
+          "dock_time": "0001-01-01T00:00:00Z"
+        }
+      ],
+      "current_step": 1,
+      "created_at": "2026-07-27T18:04:16.458106261+08:00",
+      "started_at": "2026-07-27T18:06:58.484715413+08:00",
+      "completed_at": "2026-07-27T18:07:12.55412305+08:00",
+      "program_id": ""
+    }
+  ]
+}

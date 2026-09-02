@@ -1,0 +1,92 @@
+[
+  {
+    "id": "sol_panel",
+    "name": "太阳能板 (小型)",
+    "type": "Power",
+    "mass": 50,
+    "power_consume": -100,
+    "data_rate": 0,
+    "cost": 3000
+  },
+  {
+    "id": "sol_panel_large",
+    "name": "太阳能板 (大型)",
+    "type": "Power",
+    "mass": 120,
+    "power_consume": -300,
+    "data_rate": 0,
+    "cost": 8000
+  },
+  {
+    "id": "battery",
+    "name": "蓄电池",
+    "type": "Power",
+    "mass": 30,
+    "power_consume": 0,
+    "data_rate": 0,
+    "cost": 2000
+  },
+  {
+    "id": "antenna",
+    "name": "通信天线",
+    "type": "Comms",
+    "mass": 20,
+    "power_consume": 50,
+    "data_rate": 100,
+    "cost": 4000
+  },
+  {
+    "id": "high_gain",
+    "name": "高增益天线",
+    "type": "Comms",
+    "mass": 60,
+    "power_consume": 150,
+    "data_rate": 500,
+    "cost": 12000
+  },
+  {
+    "id": "camera",
+    "name": "可见光相机",
+    "type": "Sensor",
+    "mass": 40,
+    "power_consume": 80,
+    "data_rate": 200,
+    "cost": 6000
+  },
+  {
+    "id": "spectrometer",
+    "name": "光谱仪",
+    "type": "Sensor",
+    "mass": 70,
+    "power_consume": 120,
+    "data_rate": 300,
+    "cost": 15000
+  },
+  {
+    "id": "radar",
+    "name": "合成孔径雷达",
+    "type": "Sensor",
+    "mass": 150,
+    "power_consume": 300,
+    "data_rate": 1000,
+    "cost": 25000
+  },
+  {
+    "id": "thruster",
+    "name": "姿态推进器",
+    "type": "Propulsion",
+    "mass": 80,
+    "power_consume": 50,
+    "data_rate": 0,
+    "cost": 7000
+  },
+  {
+    "id": "star_tracker",
+    "name": "星敏感器",
+    "type": "Structure",
+    "mass": 15,
+    "power_consume": 20,
+    "data_rate": 0,
+    "cost": 9000
+  }
+]

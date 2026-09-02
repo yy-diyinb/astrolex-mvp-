@@ -1,0 +1,26 @@
+{
+  "earth_heavy": {
+    "id": "earth_heavy",
+    "name": "地球重工联合",
+    "owner": "earth_gov",
+    "parts_list": ["kr-99"],
+    "political_status": "Normal",
+    "delivery_time_mod": 1.0
+  },
+  "earth_aero": {
+    "id": "earth_aero",
+    "name": "地球宇航系统",
+    "owner": "earth_gov",
+    "parts_list": ["t-4000", "faring_6m"],
+    "political_status": "Normal",
+    "delivery_time_mod": 1.1
+  },
+  "mars_tech": {
+    "id": "mars_tech",
+    "name": "火星科技集团",
+    "owner": "mars_ind",
+    "parts_list": ["av-1"],
+    "political_status": "Normal",
+    "delivery_time_mod": 1.2
+  }
+}
